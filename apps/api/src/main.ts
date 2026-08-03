@@ -2,11 +2,14 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filters/http-exception/http-exception.filter';
+import { AppConfigService } from './core/config/app-config.service';
 
 async function bootstrap(): Promise<void> {
   const logger = new Logger('Bootstrap');
 
   const app = await NestFactory.create(AppModule);
+
+  const config = app.get(AppConfigService);
 
   // global exception filter
   app.useGlobalFilters(new HttpExceptionFilter());
@@ -22,12 +25,12 @@ async function bootstrap(): Promise<void> {
 
   // cors configuration
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: config.frontendUrl,
   });
 
   app.setGlobalPrefix('api');
 
-  await app.listen(3001);
+  await app.listen(config.port);
 
   const appUrl = await app.getUrl();
   logger.log(`Application is running on: ${appUrl}/api`);
