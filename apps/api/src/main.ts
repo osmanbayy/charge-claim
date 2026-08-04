@@ -9,6 +9,9 @@ async function bootstrap(): Promise<void> {
 
   const app = await NestFactory.create(AppModule);
 
+  // ctrl + c -> close postgresql connection
+  app.enableShutdownHooks();
+
   const config = app.get(AppConfigService);
 
   // global exception filter
