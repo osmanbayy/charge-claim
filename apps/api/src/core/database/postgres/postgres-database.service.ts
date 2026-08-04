@@ -7,7 +7,7 @@ import {
 import * as schema from './drizzle/schema';
 import postgres from 'postgres';
 import { drizzle, type PostgresJsDatabase } from 'drizzle-orm/postgres-js';
-import { AppConfigService } from 'src/core/config/app-config.service';
+import { AppConfigService } from '../../config/app-config.service';
 import { sql } from 'drizzle-orm';
 
 @Injectable()

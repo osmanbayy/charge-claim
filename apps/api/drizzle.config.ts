@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import 'dotenv/config';
 import { defineConfig } from 'drizzle-kit';
 import appConfig from './src/core/config/app.config';
