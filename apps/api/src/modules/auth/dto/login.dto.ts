@@ -11,3 +11,7 @@ export class LoginDto {
   @MaxLength(72)
   password!: string;
 }
+
+export class LoginResponseDto {
+  accessToken!: string;
+}

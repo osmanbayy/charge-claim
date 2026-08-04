@@ -5,6 +5,7 @@ import {
   IsNotEmpty,
   IsString,
   IsUrl,
+  Matches,
   Max,
   Min,
   MinLength,
@@ -17,6 +18,7 @@ const BOOLEAN_STRINGS = ['true', 'false'] as const;
 
 type NodeEnvironment = (typeof NODE_ENVIRONMENTS)[number];
 type BooleanString = (typeof BOOLEAN_STRINGS)[number];
+type JwtDuration = `${number}${'s' | 'm' | 'h' | 'd'}`;
 
 export class EnvironmentVariables {
   @IsIn(NODE_ENVIRONMENTS)
@@ -41,8 +43,10 @@ export class EnvironmentVariables {
   JWT_SECRET!: string;
 
   @IsString()
-  @IsNotEmpty()
-  JWT_EXPIRES_IN!: string;
+  @Matches(/^[1-9]\d*[smhd]$/, {
+    message: 'JWT_EXPIRES_IN must use formats such as 30m, 8h or 1d',
+  })
+  JWT_EXPIRES_IN!: JwtDuration;
 
   @IsUrl({ require_tld: false })
   FRONTEND_URL!: string;
