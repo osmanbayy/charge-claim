@@ -103,13 +103,16 @@ export const chargingSessions = pgTable(
       .notNull(),
   },
   (table) => [
+    // end time must be greater than start date
     check(
       'charging_sessions_planned_end_after_start_check',
       sql`${table.plannedEndAt} > ${table.startedAt}`,
     ),
+    // same connector can be only one active session at the same time
     uniqueIndex('charging_sessions_active_connector_unique')
       .on(table.connectorId)
       .where(sql`${table.status} = 'ACTIVE'`),
+    // same user can start only one active session at the same time
     uniqueIndex('charging_sessions_active_user_unique')
       .on(table.userId)
       .where(sql`${table.status} = 'ACTIVE'`),
