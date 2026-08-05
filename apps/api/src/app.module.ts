@@ -5,6 +5,7 @@ import { AppConfigModule } from './core/config/app-config.module';
 import { PostgresDatabaseModule } from './core/database/postgres/postgres-database.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { StationsModule } from './modules/stations/stations.module';
+import { ConnectorsModule } from './modules/connectors/connectors.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { StationsModule } from './modules/stations/stations.module';
     PostgresDatabaseModule,
     AuthModule,
     StationsModule,
+    ConnectorsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -27,6 +27,15 @@ export const connectorOperationalStatusEnum = pgEnum(
   CONNECTOR_OPERATIONAL_STATUSES,
 );
 
+export const CONNECTOR_CURRENT_STATUSES = [
+  'MAINTENANCE',
+  'OCCUPIED',
+  'RESERVED',
+  'AVAILABLE',
+] as const;
+export type ConnectorCurrentStatus =
+  (typeof CONNECTOR_CURRENT_STATUSES)[number];
+
 export const connectors = pgTable(
   'connectors',
   {
