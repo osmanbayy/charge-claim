@@ -3,9 +3,10 @@ import { PostgresDatabaseModule } from '../../core/database/postgres/postgres-da
 import { ConnectorsController } from './connectors.controller';
 import { ConnectorsRepository } from './repositories/connectors.repository';
 import { ConnectorsService } from './connectors.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [PostgresDatabaseModule],
+  imports: [PostgresDatabaseModule, AuthModule],
   controllers: [ConnectorsController],
   providers: [ConnectorsRepository, ConnectorsService],
   exports: [ConnectorsService],

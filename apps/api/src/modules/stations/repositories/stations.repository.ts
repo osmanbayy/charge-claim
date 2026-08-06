@@ -1,6 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { PostgresDatabaseService } from '../../../core/database/postgres/postgres-database.service';
-import type { StationEntity } from '../entities/station.entity';
+import type {
+  NewStationEntity,
+  StationEntity,
+  UpdateStationEntity,
+} from '../entities/station.entity';
 import { stations } from '../../../core/database/postgres/drizzle/schema';
 import { asc, eq } from 'drizzle-orm';
 
@@ -23,5 +27,31 @@ export class StationsRepository {
       .limit(1);
 
     return station ?? null;
+  }
+
+  async create(newStation: NewStationEntity): Promise<StationEntity> {
+    const [createdStation] = await this.postgresDbService.database
+      .insert(stations)
+      .values(newStation)
+      .returning();
+    if (!createdStation) throw new Error('Station could not be created.');
+
+    return createdStation;
+  }
+
+  async update(
+    id: number,
+    changes: UpdateStationEntity,
+  ): Promise<StationEntity | null> {
+    const [updatedStation] = await this.postgresDbService.database
+      .update(stations)
+      .set({
+        ...changes,
+        updatedAt: new Date(),
+      })
+      .where(eq(stations.id, id))
+      .returning();
+
+    return updatedStation ?? null;
   }
 }

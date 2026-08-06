@@ -1,10 +1,10 @@
 import { getTableColumns, sql } from 'drizzle-orm';
 import {
   chargingSessions,
-  ConnectorCurrentStatus,
   connectors,
   reservations,
 } from '../../../../core/database/postgres/drizzle/schema';
+import { ConnectorCurrentStatus } from '../../entities/connector.entity';
 
 export const connectorWithCurrentStatusSelection = {
   ...getTableColumns(connectors),

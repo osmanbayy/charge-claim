@@ -1,8 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PostgresDatabaseService } from '../../../core/database/postgres/postgres-database.service';
-import type { ConnectorWithCurrentStatus } from '../entities/connector.entity';
+import type {
+  ConnectorEntity,
+  ConnectorWithCurrentStatus,
+  NewConnectorEntity,
+  UpdateConnectorEntity,
+} from '../entities/connector.entity';
 import { connectors } from '../../../core/database/postgres/drizzle/schema';
-import { asc, eq, inArray } from 'drizzle-orm';
+import { and, asc, eq, inArray } from 'drizzle-orm';
 import { connectorWithCurrentStatusSelection } from './queries/connector.queries';
 
 @Injectable()
@@ -29,5 +34,46 @@ export class ConnectorsRepository {
       .from(connectors)
       .where(inArray(connectors.stationId, stationIds))
       .orderBy(asc(connectors.stationId), asc(connectors.code));
+  }
+
+  async findByStationIdAndCode(
+    stationId: number,
+    code: string,
+  ): Promise<ConnectorEntity | null> {
+    const [connector] = await this.postgresDbService.database
+      .select()
+      .from(connectors)
+      .where(
+        and(eq(connectors.stationId, stationId), eq(connectors.code, code)),
+      )
+      .limit(1);
+
+    return connector ?? null;
+  }
+
+  async create(newConnector: NewConnectorEntity): Promise<ConnectorEntity> {
+    const [createdConnector] = await this.postgresDbService.database
+      .insert(connectors)
+      .values(newConnector)
+      .returning();
+    if (!createdConnector) throw new Error('Connector could not be created.');
+
+    return createdConnector;
+  }
+
+  async update(
+    id: number,
+    changes: UpdateConnectorEntity,
+  ): Promise<ConnectorEntity | null> {
+    const [updatedConnector] = await this.postgresDbService.database
+      .update(connectors)
+      .set({
+        ...changes,
+        updatedAt: new Date(),
+      })
+      .where(eq(connectors.id, id))
+      .returning();
+
+    return updatedConnector ?? null;
   }
 }

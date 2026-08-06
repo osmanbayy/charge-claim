@@ -4,9 +4,10 @@ import { StationsRepository } from './repositories/stations.repository';
 import { StationsController } from './stations.controller';
 import { StationsService } from './stations.service';
 import { ConnectorsModule } from '../connectors/connectors.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
-  imports: [PostgresDatabaseModule, ConnectorsModule],
+  imports: [PostgresDatabaseModule, ConnectorsModule, AuthModule],
   controllers: [StationsController],
   providers: [StationsRepository, StationsService],
   exports: [StationsService],

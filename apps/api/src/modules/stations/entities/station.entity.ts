@@ -8,3 +8,10 @@ export type NewStationEntity = typeof stations.$inferInsert;
 export type StationWithConnectors = StationEntity & {
   connectors: ConnectorWithCurrentStatus[];
 };
+
+export type UpdateStationEntity = Partial<
+  Pick<
+    NewStationEntity,
+    'name' | 'district' | 'address' | 'latitude' | 'longitude'
+  >
+>;
