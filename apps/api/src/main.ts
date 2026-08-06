@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filters/http-exception/http-exception.filter';
 import { AppConfigService } from './core/config/app-config.service';
+import { configureSwagger } from './core/swagger/swagger.config';
 
 async function bootstrap(): Promise<void> {
   const logger = new Logger('Bootstrap');
@@ -32,6 +33,8 @@ async function bootstrap(): Promise<void> {
   });
 
   app.setGlobalPrefix('api');
+
+  configureSwagger(app);
 
   await app.listen(config.port);
 
