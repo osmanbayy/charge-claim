@@ -34,3 +34,13 @@ export interface Station {
   updatedAt: string;
   connectors: Connector[];
 }
+
+export interface CreateStationInput {
+  name: string;
+  district: string;
+  address: string;
+  latitude: number;
+  longitude: number;
+}
+
+export type CreatedStation = Omit<Station, "connectors">;
