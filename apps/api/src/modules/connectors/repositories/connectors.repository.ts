@@ -6,9 +6,15 @@ import type {
   NewConnectorEntity,
   UpdateConnectorEntity,
 } from '../entities/connector.entity';
-import { connectors } from '../../../core/database/postgres/drizzle/schema';
-import { and, asc, eq, inArray } from 'drizzle-orm';
+import {
+  chargingSessions,
+  type ConnectorOperationalStatus,
+  connectors,
+  reservations,
+} from '../../../core/database/postgres/drizzle/schema';
+import { and, asc, eq, gt, inArray } from 'drizzle-orm';
 import { connectorWithCurrentStatusSelection } from './queries/connector.queries';
+import { PostgresTransaction } from '../../../core/database/postgres/postgres-transaction.type';
 
 @Injectable()
 export class ConnectorsRepository {
@@ -75,5 +81,83 @@ export class ConnectorsRepository {
       .returning();
 
     return updatedConnector ?? null;
+  }
+
+  // find connector id for lock the row (FOR UPDATE)
+  async findByIdForUpdate(
+    transaction: PostgresTransaction,
+    id: number,
+  ): Promise<ConnectorEntity | null> {
+    const [connector] = await this.postgresDbService.database
+      .select()
+      .from(connectors)
+      .where(eq(connectors.id, id))
+      // lock for connector row
+      .for('update')
+      .limit(1);
+
+    return connector ?? null;
+  }
+
+  // is there active charging in the connector?
+  async hasActiveChargingSession(
+    transaction: PostgresTransaction,
+    connectorId: number,
+  ): Promise<boolean> {
+    const [activeSession] = await transaction
+      .select({
+        id: chargingSessions.id,
+      })
+      .from(chargingSessions)
+      // only get status is active
+      .where(
+        and(
+          eq(chargingSessions.connectorId, connectorId),
+          eq(chargingSessions.status, 'ACTIVE'),
+        ),
+      )
+      .limit(1);
+
+    return activeSession !== undefined;
+  }
+
+  // get confirmed but not yet completed or future confirmed reservatşons.
+  async hasUpcomingConfirmedReservation(
+    transaction: PostgresTransaction,
+    connectorId: number,
+    now: Date,
+  ): Promise<boolean> {
+    const [reservation] = await transaction
+      .select({
+        id: reservations.id,
+      })
+      .from(reservations)
+      .where(
+        and(
+          eq(reservations.connectorId, connectorId),
+          eq(reservations.status, 'CONFIRMED'),
+          gt(reservations.endAt, now),
+        ),
+      )
+      .limit(1);
+
+    return reservation !== undefined;
+  }
+
+  async updateOperationalStatus(
+    transaction: PostgresTransaction,
+    connectorId: number,
+    operationalStatus: ConnectorOperationalStatus,
+  ): Promise<ConnectorEntity | null> {
+    const [statusUpdatedConnector] = await transaction
+      .update(connectors)
+      .set({
+        operationalStatus,
+        updatedAt: new Date(),
+      })
+      .where(eq(connectors.id, connectorId))
+      .returning();
+
+    return statusUpdatedConnector ?? null;
   }
 }

@@ -12,10 +12,15 @@ import type {
 } from './entities/connector.entity';
 import { CreateConnectorDto } from './dto/create-connector.dto';
 import { UpdateConnectorDto } from './dto/update-connector.dto';
+import { PostgresDatabaseService } from '../../core/database/postgres/postgres-database.service';
+import { UpdateConnectorOperationalStatusDto } from './dto/update-connector-operational-status.dto';
 
 @Injectable()
 export class ConnectorsService {
-  constructor(private readonly connectorsRepository: ConnectorsRepository) {}
+  constructor(
+    private readonly connectorsRepository: ConnectorsRepository,
+    private readonly postgresDbService: PostgresDatabaseService,
+  ) {}
 
   async findById(id: number): Promise<ConnectorWithCurrentStatus> {
     const connector = await this.connectorsRepository.findById(id);
@@ -109,5 +114,60 @@ export class ConnectorsService {
       throw new NotFoundException('Connector nor found.');
 
     return updatedConnector;
+  }
+
+  async updateOperationalStatus(
+    connectorId: number,
+    updateOperationalStatusDto: UpdateConnectorOperationalStatusDto,
+  ): Promise<ConnectorEntity> {
+    return this.postgresDbService.database.transaction(async (transaction) => {
+      // transaction opened and connector row locked
+      const connector = await this.connectorsRepository.findByIdForUpdate(
+        transaction,
+        connectorId,
+      );
+      if (connector === null)
+        throw new NotFoundException('Connector not found.');
+
+      // requested status = connectorOperationalStatus -> don't perform unnecessary update
+      const requestedStatus = updateOperationalStatusDto.operationalStatus;
+      if (connector.operationalStatus === requestedStatus) return connector;
+
+      if (requestedStatus === 'MAINTENANCE') {
+        // checking for an active charge session
+        const hasActiveChargeSession =
+          await this.connectorsRepository.hasActiveChargingSession(
+            transaction,
+            connectorId,
+          );
+        if (hasActiveChargeSession)
+          throw new ConflictException(
+            'Connector cannot be placed into maintenance while it has an active charging session.',
+          );
+
+        // checking confirmed reservations for feature
+        const hasUpcomingConfirmedReservation =
+          await this.connectorsRepository.hasUpcomingConfirmedReservation(
+            transaction,
+            connectorId,
+            new Date(),
+          );
+        if (hasUpcomingConfirmedReservation)
+          throw new ConflictException(
+            'Connector cannot be placed into maintenance while it has a confirmed reservation',
+          );
+      }
+
+      const updatedConnector =
+        await this.connectorsRepository.updateOperationalStatus(
+          transaction,
+          connectorId,
+          requestedStatus,
+        );
+      if (updatedConnector === null)
+        throw new NotFoundException('Connector not found.');
+
+      return updatedConnector;
+    });
   }
 }

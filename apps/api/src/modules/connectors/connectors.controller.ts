@@ -30,6 +30,7 @@ import {
   ConnectorResponseDto,
   ConnectorWithCurrentStatusResponseDto,
 } from './dto/connector-response.dto';
+import { UpdateConnectorOperationalStatusDto } from './dto/update-connector-operational-status.dto';
 
 @Controller('connectors')
 export class ConnectorsController {
@@ -84,5 +85,41 @@ export class ConnectorsController {
     @Body() updateConnectorDto: UpdateConnectorDto,
   ): Promise<ConnectorEntity> {
     return this.connectorsService.update(id, updateConnectorDto);
+  }
+
+  @Patch(':id/operational-status')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('STAFF')
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Update connector operational status as STAFF',
+  })
+  @ApiOkResponse({
+    type: ConnectorResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'Request or connector ID is invalid.',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'A valid access token is required.',
+  })
+  @ApiForbiddenResponse({
+    description: 'STAFF role is required.',
+  })
+  @ApiNotFoundResponse({
+    description: 'Connector was not found.',
+  })
+  @ApiConflictResponse({
+    description:
+      'Connector has an active charging session or a confirmed reservation.',
+  })
+  updateOperationalStatus(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateOperationalStatusDto: UpdateConnectorOperationalStatusDto,
+  ): Promise<ConnectorEntity> {
+    return this.connectorsService.updateOperationalStatus(
+      id,
+      updateOperationalStatusDto,
+    );
   }
 }
