@@ -104,3 +104,7 @@ export const connectorStationPlan = [
   { stationName: 'Charge Claim Sarıyer', connectorCount: 2 },
   { stationName: 'Charge Claim Beylikdüzü', connectorCount: 2 },
 ] as const;
+
+export const RESERVATION_DURATION_MINUTES = [30, 60, 90, 120] as const;
+export type ReservationDurationMinutes =
+  (typeof RESERVATION_DURATION_MINUTES)[number];

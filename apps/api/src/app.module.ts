@@ -6,6 +6,7 @@ import { PostgresDatabaseModule } from './core/database/postgres/postgres-databa
 import { AuthModule } from './modules/auth/auth.module';
 import { StationsModule } from './modules/stations/stations.module';
 import { ConnectorsModule } from './modules/connectors/connectors.module';
+import { AvailabilityModule } from './modules/availability/availability.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ConnectorsModule } from './modules/connectors/connectors.module';
     AuthModule,
     StationsModule,
     ConnectorsModule,
+    AvailabilityModule,
   ],
   controllers: [AppController],
   providers: [AppService],
