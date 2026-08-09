@@ -105,6 +105,7 @@ export const connectorStationPlan = [
   { stationName: 'Charge Claim Beylikdüzü', connectorCount: 2 },
 ] as const;
 
+export const MILLISECONDS_PER_MINUTE = 60_000;
 export const RESERVATION_DURATION_MINUTES = [30, 60, 90, 120] as const;
 export type ReservationDurationMinutes =
   (typeof RESERVATION_DURATION_MINUTES)[number];

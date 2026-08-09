@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { StationsModule } from './modules/stations/stations.module';
 import { ConnectorsModule } from './modules/connectors/connectors.module';
 import { AvailabilityModule } from './modules/availability/availability.module';
+import { ReservationsModule } from './modules/reservations/reservations.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AvailabilityModule } from './modules/availability/availability.module';
     StationsModule,
     ConnectorsModule,
     AvailabilityModule,
+    ReservationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

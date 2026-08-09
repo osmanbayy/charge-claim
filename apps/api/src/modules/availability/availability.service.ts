@@ -5,9 +5,10 @@ import type {
   AvailabilityResponseDto,
   AvailableStationResponseDto,
 } from './dto/availabilty-response.dto';
-import { RESERVATION_DURATION_MINUTES } from '../../common/constants';
-
-const MILLISECONDS_PER_MINUTE = 60_000;
+import {
+  MILLISECONDS_PER_MINUTE,
+  RESERVATION_DURATION_MINUTES,
+} from '../../common/constants';
 
 @Injectable()
 export class AvailabilityService {
