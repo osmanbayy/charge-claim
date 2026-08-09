@@ -10,6 +10,10 @@ import { MILLISECONDS_PER_MINUTE } from '../../common/constants';
 import { PostgresDatabaseService } from '../../core/database/postgres/postgres-database.service';
 import { ReservationsRepository } from './repositories/reservations.repository';
 import type { ReservationEntity } from './entities/reservation.entity';
+import {
+  hasPostgresErrorCode,
+  POSTGRES_EXCLUSION_VIOLATION_CODE,
+} from '../../core/database/postgres/postgres-error.util';
 
 @Injectable()
 export class ReservationsService {
@@ -27,55 +31,62 @@ export class ReservationsService {
     const { startAt, endAt, noShowDeadlineAt } =
       this.calculateReservationTimes(createReservationDto);
 
-    // start the transaction
-    return this.postgresDbService.database.transaction(async (transaction) => {
-      // lock the connector row
-      const connector =
-        await this.reservationsRepository.findConnectorByIdForUpdate(
-          transaction,
-          createReservationDto.connectorId,
-        );
-      // check the connector
-      if (connector === null)
-        throw new NotFoundException('Connector not found.');
-      if (connector.operationalStatus === 'MAINTENANCE')
-        throw new ConflictException('Connector is currently in manitenance');
+    try {
+      // start the transaction
+      return this.postgresDbService.database.transaction(
+        async (transaction) => {
+          // lock the connector row
+          const connector =
+            await this.reservationsRepository.findConnectorByIdForUpdate(
+              transaction,
+              createReservationDto.connectorId,
+            );
+          // check the connector
+          if (connector === null)
+            throw new NotFoundException('Connector not found.');
+          if (connector.operationalStatus === 'MAINTENANCE')
+            throw new ConflictException(
+              'Connector is currently in manitenance',
+            );
 
-      // check for overlapping reservation
-      const hasOverlappingReservation =
-        await this.reservationsRepository.hasOverlappingReservation(
-          transaction,
-          connector.id,
-          startAt,
-          endAt,
-        );
-      if (hasOverlappingReservation)
-        throw new ConflictException(
-          'The connector is unavailable for the selected time range.',
-        );
+          // check for overlapping reservation
+          const hasOverlappingReservation =
+            await this.reservationsRepository.hasOverlappingReservation(
+              transaction,
+              connector.id,
+              startAt,
+              endAt,
+            );
+          if (hasOverlappingReservation)
+            throw this.createTimeConflictException();
 
-      // check for overlapping actice charging session
-      const hasOverlappingActiveChargingSession =
-        await this.reservationsRepository.hasOverlappingActiveChargeSession(
-          transaction,
-          connector.id,
-          startAt,
-          endAt,
-        );
-      if (hasOverlappingActiveChargingSession)
-        throw new ConflictException(
-          'The connector is unavailable for the selected time range.',
-        );
+          // check for overlapping actice charging session
+          const hasOverlappingActiveChargingSession =
+            await this.reservationsRepository.hasOverlappingActiveChargeSession(
+              transaction,
+              connector.id,
+              startAt,
+              endAt,
+            );
+          if (hasOverlappingActiveChargingSession)
+            throw this.createTimeConflictException();
 
-      // if evething is ok -> reservation insert
-      return this.reservationsRepository.createReservation(transaction, {
-        userId,
-        connectorId: connector.id,
-        startAt,
-        endAt,
-        noShowDeadlineAt,
-      });
-    });
+          // if evething is ok -> reservation insert
+          return this.reservationsRepository.createReservation(transaction, {
+            userId,
+            connectorId: connector.id,
+            startAt,
+            endAt,
+            noShowDeadlineAt,
+          });
+        },
+      );
+    } catch (error: unknown) {
+      if (hasPostgresErrorCode(error, POSTGRES_EXCLUSION_VIOLATION_CODE))
+        throw this.createTimeConflictException();
+
+      throw error;
+    }
   }
 
   findReservationsByUserId(userId: number): Promise<ReservationEntity[]> {
@@ -135,6 +146,13 @@ export class ReservationsService {
         throw new ConflictException('Reservation could not be cancelled.');
 
       return cancelledReservation;
+    });
+  }
+
+  private createTimeConflictException(): ConflictException {
+    return new ConflictException({
+      code: 'RESERVATION_TIME_CONFLICT',
+      message: 'The connector is unavailable for the selected time range.',
     });
   }
 
