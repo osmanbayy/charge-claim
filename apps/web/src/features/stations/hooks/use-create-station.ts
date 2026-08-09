@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createStation } from "../api/create-station";
+import { createStation } from "../api";
 import { stationQueryKeys } from "./use-stations";
 
 export function useCreateStation() {
