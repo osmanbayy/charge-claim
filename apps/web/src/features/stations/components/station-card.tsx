@@ -1,27 +1,42 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Station } from "../types/station";
-import { ArrowRight, MapPin, Plug } from "lucide-react";
-import { statusClasses, statusLabels } from "../station-constants";
-import { Badge } from "@/components/ui/badge";
-import Link from "next/link";
+import Link from 'next/link';
+import { MapPin, Plug } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  statusClasses,
+  statusLabels,
+} from '../station-constants';
+import type { Station } from '../types/station';
+
+const priceFormatter = new Intl.NumberFormat('tr-TR', {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 
 interface StationCardProps {
-  station: Station,
+  station: Station;
 }
+
 export function StationCard({ station }: StationCardProps) {
   const availableConnectorCount = station.connectors.filter(
     (connector) => connector.currentStatus === 'AVAILABLE',
   ).length;
 
   return (
-    <Link href={`/stations/${station.id}`}>
-      <Card className="h-full overflow-hidden transition-all hover:-translate-y-0.5 hover:shadow-lg">
-        <CardHeader className="border-b bg-card">
+    <Link
+      href={`/stations/${station.id}`}
+      className="block h-full rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <Card className="h-full transition-colors hover:border-emerald-300">
+        <CardHeader className="space-y-3">
           <div className="flex items-start justify-between gap-4">
-            <div className="space-y-1">
-              <CardTitle className="text-lg">
-                {station.name}
-              </CardTitle>
+            <div className="space-y-2">
+              <CardTitle>{station.name}</CardTitle>
 
               <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                 <MapPin className="size-4 shrink-0" />
@@ -61,16 +76,28 @@ export function StationCard({ station }: StationCardProps) {
                     {connector.code}
                   </p>
 
-                  <p className="text-xs text-muted-foregorund">
-                    {connector.type.replace("_", " ")}
-                    {connector.powerKw.replace(".00", "")} kW
-                    {connector.pricePerKWh.replace(".", ",")} ₺/kWh
+                  <p className="text-xs text-muted-foreground">
+                    {connector.type === 'TYPE_2'
+                      ? 'Type 2'
+                      : 'CCS2'}
+                    {' · '}
+                    {Number(connector.powerKw).toLocaleString(
+                      'tr-TR',
+                    )}{' '}
+                    kW
+                    {' · '}
+                    {priceFormatter.format(
+                      Number(connector.pricePerKWh),
+                    )}{' '}
+                    ₺/kWh
                   </p>
                 </div>
 
                 <Badge
                   variant="outline"
-                  className={statusClasses[connector.currentStatus]}
+                  className={
+                    statusClasses[connector.currentStatus]
+                  }
                 >
                   {statusLabels[connector.currentStatus]}
                 </Badge>
@@ -80,5 +107,5 @@ export function StationCard({ station }: StationCardProps) {
         </CardContent>
       </Card>
     </Link>
-  )
+  );
 }

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getStation, getStations } from "../api/get-stations";
+import { getStation, getStations } from "../api";
 
 export const stationQueryKeys = {
   all: ["stations"] as const,
