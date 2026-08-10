@@ -6,7 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import type { AvailableStation } from '../types/availability';
+import type { AvailableConnector, AvailableStation } from '../types/availability';
+import { Button } from '@/components/ui/button';
 
 const priceFormatter = new Intl.NumberFormat('tr-TR', {
   minimumFractionDigits: 2,
@@ -15,10 +16,15 @@ const priceFormatter = new Intl.NumberFormat('tr-TR', {
 
 interface AvailableStationCardProps {
   station: AvailableStation;
+  onReserve: (
+    station: AvailableStation,
+    connector: AvailableConnector,
+  ) => void;
 }
 
 export function AvailableStationCard({
   station,
+  onReserve,
 }: AvailableStationCardProps) {
   return (
     <Card className='h-full'>
@@ -77,6 +83,15 @@ export function AvailableStationCard({
                   )}{' '}
                   ₺/kWh
                 </p>
+
+                <Button
+                  type="button"
+                  size="sm"
+                  className="mt-2"
+                  onClick={() => onReserve(station, connector)}
+                >
+                  Rezervasyon yap
+                </Button>
               </div>
             </div>
           ))}

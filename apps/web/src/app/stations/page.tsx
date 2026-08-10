@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AvailabilitySearchForm } from '@/features/availability/components/availability-search-form';
 import { AvailableStationCard } from '@/features/availability/components/available-station-card';
 import { useAvailability } from '@/features/availability/hooks/use-availability';
-import type { AvailabilityQueryParams } from '@/features/availability/types/availability';
+import type { AvailabilityQueryParams, AvailableConnector, AvailableStation } from '@/features/availability/types/availability';
 import { StationCard } from '@/features/stations/components/station-card';
 import { useStations } from '@/features/stations/hooks/use-stations';
 import {
@@ -19,6 +19,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { StationMap } from '@/features/stations/components/station-map';
+import { ReservationConfirmationDialog, type ReservationSelection } from '@/features/reservations/components/reservation-confirm-dialog';
 
 type StationViewMode = 'list' | 'map';
 
@@ -27,6 +28,7 @@ export default function StationsPage() {
     useState<AvailabilityQueryParams | null>(null);
   const [isSearchDialogOpen, setIsSearchDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState<StationViewMode>('list');
+  const [reservationSelection, setReservationSelection] = useState<ReservationSelection | null>(null);
 
   const stationsQuery = useStations();
   const availabilityQuery = useAvailability(availabilityParams);
@@ -68,6 +70,13 @@ export default function StationsPage() {
   const visibleStations = isAvailabilityMode
     ? (availabilityQuery.data?.stations ?? [])
     : (stationsQuery.data ?? []);
+
+  function handleReservationSelection(
+    station: AvailableStation,
+    connector: AvailableConnector,
+  ): void {
+    setReservationSelection({ station, connector });
+  }
 
   return (
     <section className="flex-1">
@@ -229,6 +238,7 @@ export default function StationsPage() {
                 <AvailableStationCard
                   key={station.id}
                   station={station}
+                  onReserve={handleReservationSelection}
                 />
               ))}
             </div>
@@ -257,6 +267,16 @@ export default function StationsPage() {
           ) : null}
         </div>
       </div>
+
+      <ReservationConfirmationDialog
+        selection={reservationSelection}
+        range={availabilityQuery.data?.range ?? null}
+        onOpenChange={(open) => {
+          if (!open) {
+            setReservationSelection(null);
+          }
+        }}
+      />
     </section>
   );
 }

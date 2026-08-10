@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   BatteryCharging,
+  CalendarDays,
   LogIn,
   LogOut,
   ShieldCheck,
@@ -50,6 +51,24 @@ export function AppHeader() {
             <div className="h-9 w-32 animate-pulse rounded-md bg-muted" />
           ) : user ? (
             <>
+              {user.role === 'DRIVER' ? (
+                <Link
+                  href="/reservations"
+                  className={buttonVariants({
+                    variant: 'ghost',
+                  })}
+                >
+                  <CalendarDays
+                    data-icon="inline-start"
+                    className="size-4"
+                  />
+
+                  <span className="hidden md:inline">
+                    Rezervasyonlarım
+                  </span>
+                </Link>
+              ) : null}
+
               {user.role === "STAFF" && (
                 <Link
                   href="/staff"
