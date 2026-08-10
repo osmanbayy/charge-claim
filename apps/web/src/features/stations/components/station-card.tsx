@@ -30,9 +30,9 @@ export function StationCard({ station }: StationCardProps) {
   return (
     <Link
       href={`/stations/${station.id}`}
-      className="block h-full rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="block h-full rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <Card className="h-full transition-colors hover:border-emerald-300">
+      <Card className="h-full">
         <CardHeader className="space-y-3">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2">

@@ -49,30 +49,30 @@
 }
 
 :root {
-  --background: oklch(0.985 0.006 160);
-  --foreground: oklch(0.19 0.025 160);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --background: oklch(0.975 0.008 190);
+  --foreground: oklch(0.17 0.035 220);
+  --card: oklch(0.995 0.004 190 / 88%);
+  --card-foreground: oklch(0.17 0.035 220);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.53 0.15 155);
-  ---primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.955 0.025 155);
+  --primary: oklch(0.72 0.18 158);
+  --primary-foreground: oklch(0.13 0.03 190);
+  --secondary: oklch(0.93 0.03 174);
   --secondary-foreground: oklch(0.25 0.05 155);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.95 0.035 155);
+  --muted: oklch(0.945 0.012 200);
+  --muted-foreground: oklch(0.48 0.025 215);
+  --accent: oklch(0.92 0.055 165);
   --accent-foreground: oklch(0.25 0.07 155);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.6 0.14 155);
+  --border: oklch(0.88 0.02 195);
+  --input: oklch(0.87 0.025 195);
+  --ring: oklch(0.72 0.18 158);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  --radius: 0.9rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -123,8 +123,25 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(circle at 12% 8%, oklch(0.85 0.09 170 / 20%), transparent 28rem),
+      radial-gradient(circle at 88% 25%, oklch(0.78 0.08 225 / 14%), transparent 32rem);
+    background-attachment: fixed;
   }
   html {
     @apply font-sans;
   }
+}
+
+::selection { background: oklch(0.72 0.18 158 / 35%); }
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+main > * { animation: fade-up .55s cubic-bezier(.22,1,.36,1) both; }
+
+@media (prefers-reduced-motion: reduce) {
+  main > * { animation: none; }
 }

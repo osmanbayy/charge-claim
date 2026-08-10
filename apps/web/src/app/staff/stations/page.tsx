@@ -137,6 +137,7 @@ export default function StaffStationsPage() {
                       <div className="space-y-3 text-sm">
                         <div className="flex items-start gap-2 text-muted-foreground">
                           <MapPin className="mt-0.5 size-4 shrink-0" />
+                          {station.address}
                         </div>
 
                         <div className="flex items-center gap-2">

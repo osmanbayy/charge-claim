@@ -70,29 +70,32 @@ export default function StationsPage() {
     : (stationsQuery.data ?? []);
 
   return (
-    <section className="flex-1 bg-muted/30">
-      <div className="bg-emerald-700 text-white">
-        <div className="mx-auto w-full max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-          <p className="text-sm font-medium text-emerald-100">
+    <section className="flex-1">
+      <div className="relative isolate overflow-hidden bg-[#071b20] text-white">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_75%_20%,oklch(0.72_0.18_158/.28),transparent_28rem),linear-gradient(115deg,transparent_40%,oklch(0.35_0.08_205/.3))]" />
+        <div className="absolute -right-24 top-1/2 -z-10 size-80 -translate-y-1/2 rounded-full border border-white/10" />
+        <div className="absolute -right-4 top-1/2 -z-10 size-56 -translate-y-1/2 rounded-full border border-primary/20" />
+        <div className="mx-auto w-full max-w-7xl px-4 py-18 sm:px-6 sm:py-24 lg:px-8">
+          <p className="inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[.2em] text-emerald-200">
             İstanbul şarj ağı
           </p>
 
-          <h1 className="mt-2 max-w-2xl text-3xl font-semibold tracking-tight sm:text-4xl">
+          <h1 className="mt-5 max-w-3xl text-4xl font-bold leading-[1.05] tracking-[-.04em] sm:text-6xl">
             Şarj noktalarını keşfet
           </h1>
 
-          <p className="mt-4 max-w-2xl text-sm leading-6 text-emerald-100 sm:text-base">
+          <p className="mt-6 max-w-xl text-base leading-7 text-slate-300 sm:text-lg">
             Tarih, saat ve konnektör özelliklerini seçerek uygun
             şarj noktalarını görüntüle.
           </p>
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl space-y-8 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <div>
           <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-xl font-semibold">
+              <h2 className="text-2xl font-bold tracking-tight">
                 {isAvailabilityMode
                   ? 'Müsait istasyonlar'
                   : 'İstasyonlar'}
@@ -122,7 +125,7 @@ export default function StationsPage() {
               <div
                 role="group"
                 aria-label="İstasyon görünümü"
-                className="inline-flex rounded-lg border bg-background p-1"
+                className="inline-flex rounded-xl border border-white/70 bg-background/70 p-1 shadow-sm backdrop-blur"
               >
                 <Button
                   type="button"

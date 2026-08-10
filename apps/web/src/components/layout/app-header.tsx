@@ -25,17 +25,17 @@ export function AppHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
-      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6">
+    <header className="sticky top-0 z-50 border-b border-white/60 bg-background/75 shadow-[0_8px_30px_-24px_oklch(0.18_0.07_205/.6)] backdrop-blur-xl">
+      <div className="mx-auto flex h-18 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link
           href="/stations"
-          className="flex items-center gap-2 font-semibold text-emerald-700"
+          className="group flex items-center gap-2.5 font-bold tracking-tight text-foreground"
         >
-          <span className="flex size-9 items-center justify-center rounded-lg bg-emerald-100">
+          <span className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-[0_10px_25px_-10px_var(--primary)] transition-transform group-hover:rotate-6 group-hover:scale-105">
             <BatteryCharging className="size-5" />
           </span>
 
-          <span className="hidden sm:inline">Charge Claim</span>
+          <span className="hidden text-[15px] sm:inline">Charge<span className="text-emerald-600">Claim</span></span>
         </Link>
 
         <nav className="flex items-center gap-2">
