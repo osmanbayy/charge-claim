@@ -19,9 +19,14 @@ import type { ConnectorType } from '@/features/stations/types/station';
 interface AvailabilitySearchFormProps {
   isSearching: boolean;
   onSearch: (params: AvailabilityQueryParams) => void;
+  showFilters?: boolean;
 }
 
-export function AvailabilitySearchForm({ isSearching, onSearch }: AvailabilitySearchFormProps) {
+export function AvailabilitySearchForm({
+  isSearching,
+  onSearch,
+  showFilters = true,
+}: AvailabilitySearchFormProps) {
   const [startAtLocal, setStartAtLocal] = useState('');
   const [durationMinutes, setDurationMinutes] = useState('60');
   const [district, setDistrict] = useState('ALL');
@@ -107,6 +112,8 @@ export function AvailabilitySearchForm({ isSearching, onSearch }: AvailabilitySe
         </Select>
       </div>
 
+      {showFilters ? (
+        <>
       {/* District filter */}
       <div className="space-y-2">
         <Label htmlFor="availability-district">İlçe</Label>
@@ -188,6 +195,8 @@ export function AvailabilitySearchForm({ isSearching, onSearch }: AvailabilitySe
           step={1}
         />
       </div>
+        </>
+      ) : null}
 
       <Button
         type='submit'

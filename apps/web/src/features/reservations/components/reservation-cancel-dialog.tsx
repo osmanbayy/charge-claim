@@ -69,9 +69,9 @@ export function ReservationCancellationDialog({
     <Dialog
       open
       disablePointerDismissal
-      onOpenChange={handleCancel}
+      onOpenChange={handleOpenChange}
     >
-      <DialogContent className="sm:max-w-md" showCloseButton={false}>
+      <DialogContent className="overflow-hidden border-red-100 shadow-2xl sm:max-w-md" showCloseButton={false}>
         <Button
           type="button"
           variant="ghost"
@@ -84,14 +84,16 @@ export function ReservationCancellationDialog({
           <XIcon className="size-4" />
         </Button>
 
+        <div className="-mx-6 -mt-6 mb-1 rounded-t-lg bg-linear-to-br from-red-950 to-red-800 px-6 py-6 text-white">
         <DialogHeader>
           <DialogTitle>Rezervasyonu İptal Et</DialogTitle>
 
-          <DialogDescription>
+          <DialogDescription className="text-white">
             Bu işlem rezervasyonunuzu kalıcı olarak iptal edecektir.
             Daha sonra müsait bir aralıkta tekrar rezervasyon oluşturabilirsiniz.
           </DialogDescription>
         </DialogHeader>
+        </div>
 
         <div className="rounded-xl border bg-muted/30 p-4">
           <p className="font-medium">{stationName}</p>
@@ -107,7 +109,7 @@ export function ReservationCancellationDialog({
           </p>
         </div>
 
-        <Alert>
+        <Alert className="border-amber-200 bg-amber-50 text-amber-950">
           <AlertTriangle className='size-4' />
 
           <AlertDescription>

@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ReservationCard } from "@/features/reservations/components/reservation-card";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, RefreshCw } from "lucide-react";
+import { CalendarDays, CheckCircle2, RefreshCw, XCircle } from "lucide-react";
 import {
   ReservationCancellationDialog,
   type CancellationSelection,
@@ -19,6 +19,7 @@ export default function ReservationsPage() {
   const router = useRouter();
 
   const [cancellationSelection, setCancellationSelection] = useState<CancellationSelection | null>(null);
+  const [activeTab, setActiveTab] = useState<'confirmed' | 'cancelled'>('confirmed');
 
   const {
     user,
@@ -33,6 +34,19 @@ export default function ReservationsPage() {
   const stationsQuery = useStations();
 
   const isPending = reservationsQuery.isPending || stationsQuery.isPending;
+
+  const confirmedReservations =
+    reservationsQuery.data?.filter(
+      (reservation) => reservation.status !== 'CANCELLED',
+    ) ?? [];
+  const cancelledReservations =
+    reservationsQuery.data?.filter(
+      (reservation) => reservation.status === 'CANCELLED',
+    ) ?? [];
+  const visibleReservations =
+    activeTab === 'confirmed'
+      ? confirmedReservations
+      : cancelledReservations;
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -136,10 +150,66 @@ export default function ReservationsPage() {
           </div>
         ) : null}
 
-        {reservationsQuery.data &&
-          reservationsQuery.data.length > 0 ? (
-          <div className="space-y-4">
-            {reservationsQuery.data.map((reservation) => {
+        {reservationsQuery.data && reservationsQuery.data.length > 0 ? (
+          <div>
+            <div
+              className="mb-6 grid grid-cols-2 rounded-xl border bg-muted/40 p-1"
+              role="tablist"
+              aria-label="Rezervasyon durumları"
+            >
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'confirmed'}
+                className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                  activeTab === 'confirmed'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                onClick={() => setActiveTab('confirmed')}
+              >
+                <CheckCircle2 className="size-4" />
+                Onaylananlar
+                <span className="rounded-full bg-black/10 px-2 py-0.5 text-xs">
+                  {confirmedReservations.length}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                role="tab"
+                aria-selected={activeTab === 'cancelled'}
+                className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                  activeTab === 'cancelled'
+                    ? 'bg-red-700 text-white shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+                onClick={() => setActiveTab('cancelled')}
+              >
+                <XCircle className="size-4" />
+                İptal Edilenler
+                <span className="rounded-full bg-black/10 px-2 py-0.5 text-xs">
+                  {cancelledReservations.length}
+                </span>
+              </button>
+            </div>
+
+            {visibleReservations.length === 0 ? (
+              <div className="rounded-2xl border border-dashed bg-card px-6 py-12 text-center">
+                {activeTab === 'confirmed' ? (
+                  <CheckCircle2 className="mx-auto size-10 text-emerald-600" />
+                ) : (
+                  <XCircle className="mx-auto size-10 text-red-500" />
+                )}
+                <h2 className="mt-3 font-semibold">
+                  {activeTab === 'confirmed'
+                    ? 'Onaylanan rezervasyon bulunmuyor'
+                    : 'İptal edilen rezervasyon bulunmuyor'}
+                </h2>
+              </div>
+            ) : (
+            <div className="space-y-4">
+            {visibleReservations.map((reservation) => {
               const station =
                 stationsQuery.data?.find((item) =>
                   item.connectors.some(
@@ -169,6 +239,8 @@ export default function ReservationsPage() {
                 />
               );
             })}
+            </div>
+            )}
           </div>
         ) : null}
       </div>

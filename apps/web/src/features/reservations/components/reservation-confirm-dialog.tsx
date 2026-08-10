@@ -156,7 +156,7 @@ export function ReservationConfirmationDialog({
         open
         onOpenChange={handleDialogOpenChange}
       >
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="border-emerald-100 shadow-2xl sm:max-w-md">
           <div className="py-6 text-center">
             <div className="mx-auto flex size-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
               <CircleCheck className="size-8" />
@@ -190,7 +190,8 @@ export function ReservationConfirmationDialog({
       open
       onOpenChange={handleDialogOpenChange}
     >
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="overflow-hidden border-emerald-100 shadow-2xl sm:max-w-lg">
+        <div className="-mx-6 -mt-6 mb-1 rounded-t-lg bg-linear-to-br from-emerald-950 to-teal-800 px-6 py-6 text-white">
         <DialogHeader>
           <DialogTitle>Rezervasyonu onayla</DialogTitle>
 
@@ -199,6 +200,7 @@ export function ReservationConfirmationDialog({
             kontrol edin.
           </DialogDescription>
         </DialogHeader>
+        </div>
 
         <div className="space-y-4">
           <div className="rounded-xl border bg-muted/30 p-4">

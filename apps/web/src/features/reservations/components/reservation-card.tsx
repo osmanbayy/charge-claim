@@ -46,7 +46,8 @@ export function ReservationCard({
     new Date(reservation.startAt).getTime() > Date.now();
 
   return (
-    <Card>
+    <Card className="overflow-hidden border-border/70 shadow-sm transition-shadow hover:shadow-md">
+      <div className="h-1 bg-linear-to-r from-emerald-600 to-teal-500" />
       <CardHeader>
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -79,8 +80,8 @@ export function ReservationCard({
           </div>
         ) : null}
 
-        <div className="grid gap-3 rounded-xl border bg-muted/20 p-4 sm:grid-cols-2">
-          <div>
+        <div className="grid gap-px overflow-hidden rounded-xl border bg-border sm:grid-cols-2">
+          <div className="bg-card p-4">
             <div className="flex items-center gap-2 text-sm font-medium">
               <CalendarClock className="size-4 text-emerald-600" />
               Başlangıç
@@ -93,7 +94,7 @@ export function ReservationCard({
             </p>
           </div>
 
-          <div>
+          <div className="bg-card p-4">
             <div className="flex items-center gap-2 text-sm font-medium">
               <Clock3 className="size-4 text-emerald-600" />
               Bitiş
@@ -107,9 +108,9 @@ export function ReservationCard({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-emerald-950 px-4 py-3 text-white">
           <div className="flex items-center gap-2 text-sm">
-            <Plug className="size-4 text-emerald-600" />
+            <Plug className="size-4 text-emerald-300" />
 
             <span className="font-medium">
               {connector?.code ??
@@ -117,7 +118,7 @@ export function ReservationCard({
             </span>
 
             {connector ? (
-              <span className="text-muted-foreground">
+              <span className="text-emerald-200">
                 {connector.type === 'TYPE_2'
                   ? 'Type 2'
                   : 'CCS2'}
@@ -126,7 +127,7 @@ export function ReservationCard({
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-sm text-muted-foreground">
+            <span className="text-sm text-emerald-100">
               {durationMinutes} dakika
             </span>
 
