@@ -23,5 +23,6 @@ import { ReservationNoShowQueueService } from './queues/reservation-no-show-queu
     ReservationsService,
     ReservationNoShowQueueService,
   ],
+  exports: [ReservationsRepository],
 })
 export class ReservationsModule {}

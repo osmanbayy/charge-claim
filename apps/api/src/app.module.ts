@@ -9,6 +9,7 @@ import { ConnectorsModule } from './modules/connectors/connectors.module';
 import { AvailabilityModule } from './modules/availability/availability.module';
 import { ReservationsModule } from './modules/reservations/reservations.module';
 import { BullMqModule } from './core/queue/bullmq.module';
+import { ChargingSessionsModule } from './modules/charging-sessions/charging-session.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { BullMqModule } from './core/queue/bullmq.module';
     AvailabilityModule,
     ReservationsModule,
     BullMqModule,
+    ChargingSessionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

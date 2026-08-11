@@ -295,4 +295,28 @@ export class ReservationsRepository {
 
     return updatedReservation !== undefined;
   }
+
+  async markReservationAsInProgress(
+    transaction: PostgresTransaction,
+    reservationId: number,
+    userId: number,
+    updatedAt: Date,
+  ): Promise<ReservationEntity | null> {
+    const [updatedReservation] = await transaction
+      .update(reservations)
+      .set({
+        status: 'IN_PROGRESS',
+        updatedAt,
+      })
+      .where(
+        and(
+          eq(reservations.id, reservationId),
+          eq(reservations.userId, userId),
+          eq(reservations.status, 'CONFIRMED'),
+        ),
+      )
+      .returning();
+
+    return updatedReservation ?? null;
+  }
 }
