@@ -1,17 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { and, asc, desc, eq, gt, inArray, lt, lte } from 'drizzle-orm';
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  gt,
+  inArray,
+  isNull,
+  lt,
+  lte,
+  or,
+} from 'drizzle-orm';
 import { PostgresDatabaseService } from '../../../core/database/postgres/postgres-database.service';
 import type { PostgresTransaction } from '../../../core/database/postgres/postgres-transaction.type';
 import {
   connectors,
   reservations,
   chargingSessions,
+  users,
 } from '../../../core/database/postgres/drizzle/schema';
 import type { ConnectorEntity } from '../../connectors/entities/connector.entity';
 import type {
   NewReservationEntity,
   ReservationEntity,
 } from '../entities/reservation.entity';
+
+export interface NoShowNotificationEntity {
+  reservationId: number;
+  reservationStartAt: Date;
+  recipientName: string;
+  recipientEmail: string;
+}
 
 @Injectable()
 export class ReservationsRepository {
@@ -207,7 +226,7 @@ export class ReservationsRepository {
   }
 
   // find reservartions taht were no-show but remain confimed (recovery scan)
-  findExpiredConfirmedReservations(
+  findReservationsPendingNoShowProcessing(
     currentTime: Date,
     limit: number,
   ): Promise<ReservationEntity[]> {
@@ -215,12 +234,65 @@ export class ReservationsRepository {
       .select()
       .from(reservations)
       .where(
-        and(
-          eq(reservations.status, 'CONFIRMED'),
-          lte(reservations.noShowDeadlineAt, currentTime),
+        or(
+          and(
+            eq(reservations.status, 'CONFIRMED'),
+            lte(reservations.noShowDeadlineAt, currentTime),
+          ),
+          and(
+            eq(reservations.status, 'NO_SHOW'),
+            isNull(reservations.noShowEmailSentAt),
+          ),
         ),
       )
       .orderBy(asc(reservations.noShowDeadlineAt))
       .limit(limit);
+  }
+
+  async findPendingNoShowNotification(
+    reservationId: number,
+  ): Promise<NoShowNotificationEntity | null> {
+    const [notification] = await this.postgresDbService.database
+      .select({
+        reservationId: reservations.id,
+        reservationStartAt: reservations.startAt,
+        recipientName: users.name,
+        recipientEmail: users.email,
+      })
+      .from(reservations)
+      // combine with user who owns the reservation
+      .innerJoin(users, eq(users.id, reservations.userId))
+      .where(
+        and(
+          eq(reservations.id, reservationId),
+          eq(reservations.status, 'NO_SHOW'),
+          isNull(reservations.noShowEmailSentAt),
+        ),
+      )
+      .limit(1);
+
+    return notification ?? null;
+  }
+
+  async markNoShowEmailAsSent(
+    reservationId: number,
+    sentAt: Date,
+  ): Promise<boolean> {
+    const [updatedReservation] = await this.postgresDbService.database
+      .update(reservations)
+      .set({
+        noShowEmailSentAt: sentAt,
+        updatedAt: sentAt,
+      })
+      .where(
+        and(
+          eq(reservations.id, reservationId),
+          eq(reservations.status, 'NO_SHOW'),
+          isNull(reservations.noShowEmailSentAt),
+        ),
+      )
+      .returning({ id: reservations.id });
+
+    return updatedReservation !== undefined;
   }
 }

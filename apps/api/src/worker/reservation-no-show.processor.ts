@@ -6,8 +6,14 @@ import {
   RESERVATION_NO_SHOW_QUEUE,
   type ReservationNoShowJobData,
 } from '../common/queues/reservation-no-show.queue';
+import { MailService } from '../core/mail/mail.service';
 import { PostgresDatabaseService } from '../core/database/postgres/postgres-database.service';
 import { ReservationsRepository } from '../modules/reservations/repositories/reservations.repository';
+
+interface NoShowProcessingResult {
+  wasMarkedAsNoShow: boolean;
+  shouldSendEmail: boolean;
+}
 
 @Processor(RESERVATION_NO_SHOW_QUEUE)
 export class ReservationNoShowProcessor extends WorkerHost {
@@ -16,34 +22,56 @@ export class ReservationNoShowProcessor extends WorkerHost {
   constructor(
     private readonly postgresDbService: PostgresDatabaseService,
     private readonly reservationsRepository: ReservationsRepository,
+    private readonly mailService: MailService,
   ) {
     super();
   }
 
   async process(job: Job<ReservationNoShowJobData>): Promise<void> {
-    if (job.name !== PROCESS_RESERVATION_NO_SHOW_JOB)
+    if (job.name !== PROCESS_RESERVATION_NO_SHOW_JOB) {
       throw new Error(`Unsupported no-show job: ${job.name}`);
+    }
 
     const { reservationId } = job.data;
 
-    const wasMarkedAsNoShow = await this.postgresDbService.database.transaction(
-      async (transaction) => {
+    const processingResult = await this.postgresDbService.database.transaction(
+      async (transaction): Promise<NoShowProcessingResult> => {
         const reservation =
           await this.reservationsRepository.findReservationByIdForUpdate(
             transaction,
             reservationId,
           );
+
         if (reservation === null) {
           this.logger.warn(`Reservation ${reservationId} was not found.`);
-          return false;
+
+          return {
+            wasMarkedAsNoShow: false,
+            shouldSendEmail: false,
+          };
+        }
+
+        if (reservation.status === 'NO_SHOW') {
+          return {
+            wasMarkedAsNoShow: false,
+            shouldSendEmail: reservation.noShowEmailSentAt === null,
+          };
+        }
+
+        if (reservation.status !== 'CONFIRMED') {
+          return {
+            wasMarkedAsNoShow: false,
+            shouldSendEmail: false,
+          };
         }
 
         const processedAt = new Date();
 
-        if (reservation.noShowDeadlineAt.getTime() > processedAt.getTime())
+        if (reservation.noShowDeadlineAt.getTime() > processedAt.getTime()) {
           throw new Error(
             `No-show deadline has not been reached for reservation ${reservationId}.`,
           );
+        }
 
         const noShowReservation =
           await this.reservationsRepository.markReservationAsNoShow(
@@ -52,13 +80,63 @@ export class ReservationNoShowProcessor extends WorkerHost {
             processedAt,
           );
 
-        return noShowReservation !== null;
+        const wasMarkedAsNoShow = noShowReservation !== null;
+
+        return {
+          wasMarkedAsNoShow,
+          shouldSendEmail: wasMarkedAsNoShow,
+        };
       },
     );
-    if (!wasMarkedAsNoShow) return;
 
-    this.logger.log(
-      `Reservation ${reservationId} marked as NO_SHOW. Job ID: ${job.id}.`,
-    );
+    if (processingResult.wasMarkedAsNoShow) {
+      this.logger.log(
+        `Reservation ${reservationId} marked as NO_SHOW. Job ID: ${job.id}.`,
+      );
+    }
+
+    if (!processingResult.shouldSendEmail) {
+      return;
+    }
+
+    await this.sendNoShowEmail(reservationId);
+  }
+
+  private async sendNoShowEmail(reservationId: number): Promise<void> {
+    const notification =
+      await this.reservationsRepository.findPendingNoShowNotification(
+        reservationId,
+      );
+
+    if (notification === null) {
+      this.logger.log(
+        `No-show email is not pending for reservation ${reservationId}.`,
+      );
+
+      return;
+    }
+
+    await this.mailService.sendNoShowEmail({
+      recipientName: notification.recipientName,
+      recipientEmail: notification.recipientEmail,
+      reservationId: notification.reservationId,
+      reservationStartAt: notification.reservationStartAt,
+    });
+
+    const wasMarkedAsSent =
+      await this.reservationsRepository.markNoShowEmailAsSent(
+        reservationId,
+        new Date(),
+      );
+
+    if (!wasMarkedAsSent) {
+      this.logger.warn(
+        `No-show email sent marker could not be updated for reservation ${reservationId}.`,
+      );
+
+      return;
+    }
+
+    this.logger.log(`No-show email sent for reservation ${reservationId}.`);
   }
 }

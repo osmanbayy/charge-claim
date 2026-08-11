@@ -12,7 +12,8 @@ const RECOVERY_BATCH_SIZE = 100;
 
 @Injectable()
 export class ReservationNoShowRecoveryService
-  implements OnModuleInit, OnModuleDestroy {
+  implements OnModuleInit, OnModuleDestroy
+{
   private readonly logger = new Logger(ReservationNoShowRecoveryService.name);
   private recoveryInterval: ReturnType<typeof setInterval> | undefined;
   private isRecoveryRunning = false;
@@ -20,7 +21,7 @@ export class ReservationNoShowRecoveryService
   constructor(
     private readonly reservationsRepository: ReservationsRepository,
     private readonly noShowQueueService: ReservationNoShowQueueService,
-  ) { }
+  ) {}
 
   async onModuleInit(): Promise<void> {
     await this.recoverySafely();
@@ -41,13 +42,13 @@ export class ReservationNoShowRecoveryService
     this.isRecoveryRunning = true;
 
     try {
-      const expiredReservations =
-        await this.reservationsRepository.findExpiredConfirmedReservations(
+      const pendingReservations =
+        await this.reservationsRepository.findReservationsPendingNoShowProcessing(
           new Date(),
           RECOVERY_BATCH_SIZE,
         );
 
-      for (const reservation of expiredReservations) {
+      for (const reservation of pendingReservations) {
         try {
           await this.noShowQueueService.schedule(
             reservation.id,
@@ -63,9 +64,9 @@ export class ReservationNoShowRecoveryService
         }
       }
 
-      if (expiredReservations.length > 0) {
+      if (pendingReservations.length > 0) {
         this.logger.warn(
-          `${expiredReservations.length} expired reservation job(s) recovered.`,
+          `${pendingReservations.length} expired reservation job(s) recovered.`,
         );
       }
     } catch (error: unknown) {

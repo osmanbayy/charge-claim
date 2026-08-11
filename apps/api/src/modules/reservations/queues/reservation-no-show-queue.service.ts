@@ -45,7 +45,7 @@ export class ReservationNoShowQueueService {
       {
         jobId: `reservation-no-show-${reservationId}`,
         delay: delayMilliseconds,
-        attempts: 5,
+        attempts: 3,
         backoff: {
           type: 'exponential',
           delay: 1_000,

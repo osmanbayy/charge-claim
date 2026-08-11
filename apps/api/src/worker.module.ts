@@ -8,19 +8,21 @@ import { ReservationsRepository } from './modules/reservations/repositories/rese
 import { ReservationNoShowProcessor } from './worker/reservation-no-show.processor';
 import { ReservationNoShowQueueService } from './modules/reservations/queues/reservation-no-show-queue.service';
 import { ReservationNoShowRecoveryService } from './worker/services/reservation-no-show-recovery.service';
+import { MailModule } from './core/mail/mail.module';
 
 @Module({
   imports: [
     AppConfigModule,
     PostgresDatabaseModule,
     BullMqModule,
+    MailModule,
 
     BullModule.registerQueue({
       name: RESERVATION_NO_SHOW_QUEUE,
     }),
   ],
   providers: [
-    ReservationsRepository, 
+    ReservationsRepository,
     ReservationNoShowProcessor,
     ReservationNoShowQueueService,
     ReservationNoShowRecoveryService,
