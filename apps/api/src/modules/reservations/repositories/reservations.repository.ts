@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { and, desc, eq, gt, inArray, lt } from 'drizzle-orm';
+import { and, asc, desc, eq, gt, inArray, lt, lte } from 'drizzle-orm';
 import { PostgresDatabaseService } from '../../../core/database/postgres/postgres-database.service';
 import type { PostgresTransaction } from '../../../core/database/postgres/postgres-transaction.type';
 import {
@@ -17,6 +17,7 @@ import type {
 export class ReservationsRepository {
   constructor(private readonly postgresDbService: PostgresDatabaseService) {}
 
+  // lock the connector row
   async findConnectorByIdForUpdate(
     transaction: PostgresTransaction,
     connectorId: number,
@@ -143,6 +144,21 @@ export class ReservationsRepository {
     return reservation ?? null;
   }
 
+  // lock reservation row for worker -> (there is no ownership control)
+  async findReservationByIdForUpdate(
+    transaction: PostgresTransaction,
+    reservationId: number,
+  ): Promise<ReservationEntity | null> {
+    const [reservation] = await transaction
+      .select()
+      .from(reservations)
+      .where(eq(reservations.id, reservationId))
+      .for('update')
+      .limit(1);
+
+    return reservation ?? null;
+  }
+
   // cancel reservation
   async cancelReservation(
     transaction: PostgresTransaction,
@@ -165,5 +181,46 @@ export class ReservationsRepository {
       .returning();
 
     return cancelledReservation ?? null;
+  }
+
+  async markReservationAsNoShow(
+    transaction: PostgresTransaction,
+    reservationId: number,
+    processedAt: Date,
+  ): Promise<ReservationEntity | null> {
+    const [noShowReservation] = await transaction
+      .update(reservations)
+      .set({
+        status: 'NO_SHOW',
+        updatedAt: processedAt,
+      })
+      .where(
+        and(
+          eq(reservations.id, reservationId),
+          eq(reservations.status, 'CONFIRMED'),
+          lte(reservations.noShowDeadlineAt, processedAt),
+        ),
+      )
+      .returning();
+
+    return noShowReservation ?? null;
+  }
+
+  // find reservartions taht were no-show but remain confimed (recovery scan)
+  findExpiredConfirmedReservations(
+    currentTime: Date,
+    limit: number,
+  ): Promise<ReservationEntity[]> {
+    return this.postgresDbService.database
+      .select()
+      .from(reservations)
+      .where(
+        and(
+          eq(reservations.status, 'CONFIRMED'),
+          lte(reservations.noShowDeadlineAt, currentTime),
+        ),
+      )
+      .orderBy(asc(reservations.noShowDeadlineAt))
+      .limit(limit);
   }
 }

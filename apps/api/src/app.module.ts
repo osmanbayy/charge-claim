@@ -8,6 +8,7 @@ import { StationsModule } from './modules/stations/stations.module';
 import { ConnectorsModule } from './modules/connectors/connectors.module';
 import { AvailabilityModule } from './modules/availability/availability.module';
 import { ReservationsModule } from './modules/reservations/reservations.module';
+import { BullMqModule } from './core/queue/bullmq.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ReservationsModule } from './modules/reservations/reservations.module';
     ConnectorsModule,
     AvailabilityModule,
     ReservationsModule,
+    BullMqModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { AppConfigService } from '../../core/config/app-config.service';
@@ -14,13 +15,17 @@ import {
   hasPostgresErrorCode,
   POSTGRES_EXCLUSION_VIOLATION_CODE,
 } from '../../core/database/postgres/postgres-error.util';
+import { ReservationNoShowQueueService } from './queues/reservation-no-show-queue.service';
 
 @Injectable()
 export class ReservationsService {
+  private readonly logger = new Logger(ReservationsService.name);
+
   constructor(
     private readonly appConfigService: AppConfigService,
     private readonly postgresDbService: PostgresDatabaseService,
     private readonly reservationsRepository: ReservationsRepository,
+    private readonly noShowQueueService: ReservationNoShowQueueService,
   ) {}
 
   async createReservation(
@@ -31,9 +36,11 @@ export class ReservationsService {
     const { startAt, endAt, noShowDeadlineAt } =
       this.calculateReservationTimes(createReservationDto);
 
+    let reservation: ReservationEntity;
+
     try {
       // start the transaction
-      return this.postgresDbService.database.transaction(
+      reservation = await this.postgresDbService.database.transaction(
         async (transaction) => {
           // lock the connector row
           const connector =
@@ -87,6 +94,23 @@ export class ReservationsService {
 
       throw error;
     }
+
+    try {
+      // define a delayed job
+      await this.noShowQueueService.schedule(
+        reservation.id,
+        reservation.noShowDeadlineAt,
+      );
+    } catch (error: unknown) {
+      const errorStack = error instanceof Error ? error.stack : undefined;
+
+      this.logger.error(
+        `No-show job could not be scheduled for reservation ${reservation.id}.`,
+        errorStack,
+      );
+    }
+
+    return reservation;
   }
 
   findReservationsByUserId(userId: number): Promise<ReservationEntity[]> {
