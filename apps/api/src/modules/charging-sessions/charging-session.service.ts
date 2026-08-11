@@ -8,6 +8,8 @@ import { ReservationsRepository } from '../reservations/repositories/reservation
 import type { StartChargingFromReservationDto } from './dto/start-charging-from-reservation.dto';
 import type { ChargingSessionEntity } from './entities/charging-session.entity';
 import { ChargingSessionRepository } from './repositories/charging-sessions.repository';
+import { MILLISECONDS_PER_MINUTE } from '../../common/constants';
+import type { StartWalkInChargingDto } from './dto/start-walk-in-charging.dto';
 
 @Injectable()
 export class ChargingSessionsService {
@@ -114,6 +116,86 @@ export class ChargingSessionsService {
         });
 
       return chargingSession;
+    });
+  }
+
+  startManuelCharging(
+    userId: number,
+    input: StartWalkInChargingDto,
+  ): Promise<ChargingSessionEntity> {
+    return this.postgresDbService.database.transaction(async (transaction) => {
+      const startedAt = new Date();
+
+      const plannedEndAt = new Date(
+        startedAt.getTime() + input.durationMinutes * MILLISECONDS_PER_MINUTE,
+      );
+
+      // lock the connector
+      const connector =
+        await this.reservationsRepository.findConnectorByIdForUpdate(
+          transaction,
+          input.connectorId,
+        );
+      if (connector === null)
+        throw new NotFoundException('Connector not found.');
+
+      // check the connector's operational status
+      if (connector.operationalStatus === 'MAINTENANCE')
+        throw new ConflictException({
+          code: 'CONNECTOR_IN_MAINTENANCE',
+          message: 'Connector is currently in maintenance.',
+        });
+
+      // check the user has an active charging session
+      const userHasActiveChargingSession =
+        await this.chargingSessionsRepository.hasActiveSessionForUser(
+          transaction,
+          userId,
+        );
+      if (userHasActiveChargingSession)
+        throw new ConflictException({
+          code: 'CHARGING_SESSION_ALREADY_ACTIVE',
+          message: 'The user already has an active charging session.',
+        });
+
+      // check the connector has an active chrging session
+      const connectorHasActiveChargingSession =
+        await this.chargingSessionsRepository.hasActiveSessionForConnector(
+          transaction,
+          connector.id,
+        );
+      if (connectorHasActiveChargingSession)
+        throw new ConflictException({
+          code: 'CONNECTOR_ALREADY_OCCUPIED',
+          message: 'The connector already has an active charging session.',
+        });
+
+      // check the reservation conflict
+      const hasOverlappingReservation =
+        await this.reservationsRepository.hasOverlappingReservation(
+          transaction,
+          connector.id,
+          startedAt,
+          plannedEndAt,
+        );
+      if (hasOverlappingReservation)
+        throw new ConflictException({
+          code: 'CONNECTOR_RESERVED_FOR_SELECTED_RANGE',
+          message:
+            'The connector has a reservation during the selected charging period.',
+        });
+
+      // eveything is ok -> start the charge
+      return this.chargingSessionsRepository.createChargeSession(transaction, {
+        userId,
+        connectorId: connector.id,
+        reservationId: null,
+        status: 'ACTIVE',
+        startedAt,
+        plannedEndAt,
+        powerKwSnapshot: connector.powerKw,
+        pricePerKWhSnapshot: connector.pricePerKWh,
+      });
     });
   }
 }

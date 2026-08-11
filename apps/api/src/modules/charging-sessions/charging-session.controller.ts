@@ -1,6 +1,7 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ChargingSessionsService } from './charging-session.service';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiConflictResponse,
   ApiCreatedResponse,
@@ -17,6 +18,7 @@ import { StartChargingFromReservationDto } from './dto/start-charging-from-reser
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
 import { Roles } from '../../common/decorators/roles.decorator';
+import { StartWalkInChargingDto } from './dto/start-walk-in-charging.dto';
 
 @ApiTags('Charging Sessions')
 @ApiBearerAuth('access-token')
@@ -53,6 +55,39 @@ export class ChargingSessionsController {
     @Body() dto: StartChargingFromReservationDto,
   ): Promise<ChargingSessionEntity> {
     return this.chargingSessionsService.startChargingFromReservation(
+      currentUser.sub,
+      dto,
+    );
+  }
+
+  @Post('walk-in')
+  @ApiOperation({
+    summary: 'Start a walk-in charging session',
+  })
+  @ApiCreatedResponse({
+    description: 'Walk-in charging session was started successfully.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Connector ID or charging duration is invalid.',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'A valid access token is required.',
+  })
+  @ApiForbiddenResponse({
+    description: 'DRIVER role is required.',
+  })
+  @ApiNotFoundResponse({
+    description: 'Connector was not found.',
+  })
+  @ApiConflictResponse({
+    description:
+      'The connector is unavailable or the driver already has an active session.',
+  })
+  startWalInCharging(
+    @CurrentUser() currentUser: JwtPayload,
+    @Body() dto: StartWalkInChargingDto,
+  ): Promise<ChargingSessionEntity> {
+    return this.chargingSessionsService.startManuelCharging(
       currentUser.sub,
       dto,
     );
