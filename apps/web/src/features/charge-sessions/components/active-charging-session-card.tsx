@@ -23,9 +23,15 @@ import {
   calculateRemainingTime,
   formatRemainingTime,
 } from '../utils';
+import type {
+  Connector,
+  Station,
+} from '@/features/stations/types/station';
 
 interface ActiveChargingSessionCardProps {
   session: ChargingSession;
+  station: Station | null;
+  connector: Connector | null;
   isStopping: boolean;
   errorMessage?: string;
   onStop: () => void;
@@ -33,6 +39,8 @@ interface ActiveChargingSessionCardProps {
 
 export function ActiveChargingSessionCard({
   session,
+  station,
+  connector,
   isStopping,
   errorMessage,
   onStop,
@@ -63,8 +71,19 @@ export function ActiveChargingSessionCard({
             </p>
 
             <CardTitle className="mt-1">
-              Connector #{session.connectorId}
+              {station?.name ?? 'İstasyon bilgisi bulunamadı'}
             </CardTitle>
+
+            <p className="mt-1 text-sm text-muted-foreground">
+              {connector?.code ??
+                `Connector #${session.connectorId}`}
+              {connector
+                ? ` · ${connector.type === 'TYPE_2'
+                  ? 'Type 2'
+                  : 'CCS2'
+                }`
+                : ''}
+            </p>
           </div>
 
           <Badge className="bg-emerald-600 text-white">

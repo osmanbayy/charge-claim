@@ -45,6 +45,7 @@ import {
 import { useStartWalkInCharging } from '@/features/charge-sessions/hooks/use-start-walk-in-charging';
 import type { ReservationDurationMinutes } from '@/lib/constants';
 import { useRouter } from 'next/navigation';
+import { getChargingErrorMessage } from "@/features/charge-sessions/error-utils";
 
 interface StationDetailProps {
   stationId: number;
@@ -369,7 +370,10 @@ export function StationDetail({ stationId }: StationDetailProps) {
         isStarting={walkInMutation.isPending}
         errorMessage={
           walkInMutation.isError
-            ? 'Anlık şarj başlatılamadı. Connector durumunu ve aktif şarj oturumunuzu kontrol edin.'
+            ? getChargingErrorMessage(
+              walkInMutation.error,
+              'Anlık şarj başlatılamadı. Lütfen tekrar deneyin.',
+            )
             : undefined
         }
         onOpenChange={(open) => {

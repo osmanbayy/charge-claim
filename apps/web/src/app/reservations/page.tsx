@@ -17,6 +17,7 @@ import {
 import type { Reservation } from '@/features/reservations/types/reservation';
 import { useStartChargingFromReservation } from "@/features/charge-sessions/hooks/use-start-charging-from-reservation";
 import { StartReservationChargingDialog } from "@/features/charge-sessions/components/start-reservation-charging-dialog";
+import { getChargingErrorMessage } from "@/features/charge-sessions/error-utils";
 
 interface StartChargingSelection {
   reservation: Reservation;
@@ -189,8 +190,8 @@ export default function ReservationsPage() {
                 role="tab"
                 aria-selected={activeTab === 'confirmed'}
                 className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${activeTab === 'confirmed'
-                    ? 'bg-emerald-600 text-white shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
                   }`}
                 onClick={() => setActiveTab('confirmed')}
               >
@@ -206,8 +207,8 @@ export default function ReservationsPage() {
                 role="tab"
                 aria-selected={activeTab === 'cancelled'}
                 className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${activeTab === 'cancelled'
-                    ? 'bg-red-700 text-white shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
+                  ? 'bg-red-700 text-white shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
                   }`}
                 onClick={() => setActiveTab('cancelled')}
               >
@@ -296,7 +297,10 @@ export default function ReservationsPage() {
         isStarting={startChargingMutation.isPending}
         errorMessage={
           startChargingMutation.isError
-            ? 'Şarj oturumu başlatılamadı. Rezervasyon zamanını ve aktif şarj durumunuzu kontrol edin.'
+            ? getChargingErrorMessage(
+              startChargingMutation.error,
+              'Şarj oturumu başlatılamadı. Lütfen tekrar deneyin.',
+            )
             : undefined
         }
         onOpenChange={(open) => {
