@@ -198,4 +198,81 @@ export class ChargingSessionsService {
       });
     });
   }
+
+  stopChargingSession(
+    userId: number,
+    sessionId: number,
+  ): Promise<ChargingSessionEntity> {
+    return this.postgresDbService.database.transaction(async (transaction) => {
+      const chargingSession =
+        await this.chargingSessionsRepository.findSessionByIdAndUserIdForUpdate(
+          transaction,
+          sessionId,
+          userId,
+        );
+
+      if (chargingSession === null)
+        throw new NotFoundException('Charging session not found.');
+
+      if (chargingSession.status !== 'ACTIVE')
+        throw new ConflictException({
+          code: 'CHARGING_SESSION_NOT_ACTIVE',
+          message: 'Only an active charging session can be stopped.',
+        });
+
+      const requestedEndAt = new Date();
+
+      const endedAt =
+        requestedEndAt.getTime() < chargingSession.plannedEndAt.getTime()
+          ? requestedEndAt
+          : chargingSession.plannedEndAt;
+
+      const endReason =
+        requestedEndAt.getTime() < chargingSession.plannedEndAt.getTime()
+          ? 'USER_STOPPED'
+          : 'TIME_LIMIT_REACHED';
+
+      const completedSession =
+        await this.chargingSessionsRepository.completeChargingSession(
+          transaction,
+          chargingSession.id,
+          endedAt,
+          endReason,
+        );
+
+      if (completedSession === null)
+        throw new ConflictException({
+          code: 'CHARGING_SESSION_NOT_ACTIVE',
+          message: 'Charging session could not be completed.',
+        });
+
+      if (chargingSession.reservationId !== null) {
+        const completedReservation =
+          await this.reservationsRepository.markReservationAsCompleted(
+            transaction,
+            chargingSession.reservationId,
+            endedAt,
+          );
+
+        if (completedReservation === null)
+          throw new ConflictException({
+            code: 'RESERVATION_CANNOT_BE_COMPLETED',
+            message:
+              'The reservation could not be moved to the completed state.',
+          });
+      }
+
+      return completedSession;
+    });
+  }
+
+  findActiveSessionByUserId(
+    userId: number,
+  ): Promise<ChargingSessionEntity | null> {
+    return this.chargingSessionsRepository.findActiveSessionByUserId(userId);
+  }
+
+  findSessionsByUserId(userId: number): Promise<ChargingSessionEntity[]> {
+    return this.chargingSessionsRepository.findSessionsByUserId(userId);
+  }
 }

@@ -319,4 +319,26 @@ export class ReservationsRepository {
 
     return updatedReservation ?? null;
   }
+
+  async markReservationAsCompleted(
+    transaction: PostgresTransaction,
+    reservationId: number,
+    completedAt: Date,
+  ): Promise<ReservationEntity | null> {
+    const [completedReservation] = await transaction
+      .update(reservations)
+      .set({
+        status: 'COMPLETED',
+        updatedAt: completedAt,
+      })
+      .where(
+        and(
+          eq(reservations.id, reservationId),
+          eq(reservations.status, 'IN_PROGRESS'),
+        ),
+      )
+      .returning();
+
+    return completedReservation ?? null;
+  }
 }
