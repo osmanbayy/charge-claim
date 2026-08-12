@@ -97,7 +97,7 @@ export class ChargingSessionsController {
     @CurrentUser() currentUser: JwtPayload,
     @Body() dto: StartWalkInChargingDto,
   ): Promise<ChargingSessionEntity> {
-    return this.chargingSessionsService.startManuelCharging(
+    return this.chargingSessionsService.startWalkInCharging(
       currentUser.sub,
       dto,
     );

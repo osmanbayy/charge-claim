@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, lte, sql } from 'drizzle-orm';
 import {
   chargingSessions,
   type ChargingSessionEndReason,
@@ -169,5 +169,36 @@ export class ChargingSessionRepository {
       .from(chargingSessions)
       .where(eq(chargingSessions.userId, userId))
       .orderBy(desc(chargingSessions.startedAt));
+  }
+
+  async findSessionByIdForUpdate(
+    transaction: PostgresTransaction,
+    sessionId: number,
+  ): Promise<ChargingSessionEntity | null> {
+    const [chargingSession] = await transaction
+      .select()
+      .from(chargingSessions)
+      .where(eq(chargingSessions.id, sessionId))
+      .for('update')
+      .limit(1);
+
+    return chargingSession ?? null;
+  }
+
+  findActiveSessionsPendingCompletion(
+    currentTime: Date,
+    limit: number,
+  ): Promise<ChargingSessionEntity[]> {
+    return this.postgresDbService.database
+      .select()
+      .from(chargingSessions)
+      .where(
+        and(
+          eq(chargingSessions.status, 'ACTIVE'),
+          lte(chargingSessions.plannedEndAt, currentTime),
+        ),
+      )
+      .orderBy(asc(chargingSessions.plannedEndAt))
+      .limit(limit);
   }
 }

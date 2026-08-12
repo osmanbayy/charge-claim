@@ -9,6 +9,11 @@ import { ReservationNoShowProcessor } from './worker/reservation-no-show.process
 import { ReservationNoShowQueueService } from './modules/reservations/queues/reservation-no-show-queue.service';
 import { ReservationNoShowRecoveryService } from './worker/services/reservation-no-show-recovery.service';
 import { MailModule } from './core/mail/mail.module';
+import { CHARGING_SESSION_COMPLETION_QUEUE } from './common/queues/charging-session-completion.queue';
+import { ChargingSessionRepository } from './modules/charging-sessions/repositories/charging-sessions.repository';
+import { ChargingSessionCompletionProcessor } from './worker/charging-session-completion.processor';
+import { ChargingSessionCompletionQueueService } from './modules/charging-sessions/charging-session-completion-queue.service';
+import { ChargingSessionCompletionRecoveryService } from './worker/services/charging-session-completion-recovery.service';
 
 @Module({
   imports: [
@@ -20,12 +25,19 @@ import { MailModule } from './core/mail/mail.module';
     BullModule.registerQueue({
       name: RESERVATION_NO_SHOW_QUEUE,
     }),
+    BullModule.registerQueue({
+      name: CHARGING_SESSION_COMPLETION_QUEUE,
+    }),
   ],
   providers: [
     ReservationsRepository,
+    ChargingSessionRepository,
     ReservationNoShowProcessor,
+    ChargingSessionCompletionProcessor,
     ReservationNoShowQueueService,
+    ChargingSessionCompletionQueueService,
     ReservationNoShowRecoveryService,
+    ChargingSessionCompletionRecoveryService,
   ],
 })
 export class WorkerModule {}
