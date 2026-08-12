@@ -4,7 +4,7 @@ import type { Reservation } from "../types/reservation";
 import { dateTimeFormatter, MILLISECONDS_PER_MINUTE, type ReservationStatus } from "@/lib/constants";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CalendarClock, Clock3, MapPin, Plug, XCircle } from "lucide-react";
+import { CalendarClock, Clock3, MapPin, Plug, XCircle, BatteryCharging } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ReservationCardProps {
@@ -12,6 +12,7 @@ interface ReservationCardProps {
   station: Station | null;
   connector: Connector | null;
   onCancel: () => void;
+  onStartCharging: () => void;
 }
 
 const statusLabels: Record<ReservationStatus, string> = {
@@ -35,6 +36,7 @@ export function ReservationCard({
   station,
   connector,
   onCancel,
+  onStartCharging,
 }: ReservationCardProps) {
   const durationMinutes = Math.round(
     (new Date(reservation.endAt).getTime() -
@@ -44,6 +46,13 @@ export function ReservationCard({
   const canCancel =
     reservation.status === 'CONFIRMED' &&
     new Date(reservation.startAt).getTime() > Date.now();
+
+  const currentTime = Date.now();
+
+  const canStartCharging =
+    reservation.status === 'CONFIRMED' &&
+    new Date(reservation.startAt).getTime() <= currentTime &&
+    currentTime < new Date(reservation.noShowDeadlineAt).getTime();
 
   return (
     <Card className="overflow-hidden border-border/70 shadow-sm transition-shadow hover:shadow-md">
@@ -131,17 +140,30 @@ export function ReservationCard({
               {durationMinutes} dakika
             </span>
 
-            {canCancel ? (
-              <Button
-                type="button"
-                size="sm"
-                variant="destructive"
-                onClick={onCancel}
-              >
-                <XCircle className="size-4" />
-                İptal et
-              </Button>
-            ) : null}
+            <div className="flex items-center gap-2">
+              {canStartCharging ? (
+                <Button
+                  type="button"
+                  size="sm"
+                  onClick={onStartCharging}
+                >
+                  <BatteryCharging className="size-4" />
+                  Şarjı başlat
+                </Button>
+              ) : null}
+
+              {canCancel ? (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="destructive"
+                  onClick={onCancel}
+                >
+                  <XCircle className="size-4" />
+                  İptal et
+                </Button>
+              ) : null}
+            </div>
           </div>
         </div>
       </CardContent>

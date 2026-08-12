@@ -52,21 +52,39 @@ export function AppHeader() {
           ) : user ? (
             <>
               {user.role === 'DRIVER' ? (
-                <Link
-                  href="/reservations"
-                  className={buttonVariants({
-                    variant: 'ghost',
-                  })}
-                >
-                  <CalendarDays
-                    data-icon="inline-start"
-                    className="size-4"
-                  />
+                <>
+                  <Link
+                    href="/reservations"
+                    className={buttonVariants({
+                      variant: 'ghost',
+                    })}
+                  >
+                    <CalendarDays
+                      data-icon="inline-start"
+                      className="size-4"
+                    />
 
-                  <span className="hidden md:inline">
-                    Rezervasyonlarım
-                  </span>
-                </Link>
+                    <span className="hidden md:inline">
+                      Rezervasyonlarım
+                    </span>
+                  </Link>
+
+                  <Link
+                    href="/charging"
+                    className={buttonVariants({
+                      variant: 'ghost',
+                    })}
+                  >
+                    <BatteryCharging
+                      data-icon="inline-start"
+                      className="size-4"
+                    />
+
+                    <span className="hidden md:inline">
+                      Şarj İşlemlerim
+                    </span>
+                  </Link>
+                </>
               ) : null}
 
               {user.role === "STAFF" && (

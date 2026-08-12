@@ -14,18 +14,29 @@ import {
   ReservationCancellationDialog,
   type CancellationSelection,
 } from '@/features/reservations/components/reservation-cancel-dialog';
+import type { Reservation } from '@/features/reservations/types/reservation';
+import { useStartChargingFromReservation } from "@/features/charge-sessions/hooks/use-start-charging-from-reservation";
+import { StartReservationChargingDialog } from "@/features/charge-sessions/components/start-reservation-charging-dialog";
+
+interface StartChargingSelection {
+  reservation: Reservation;
+  stationName: string;
+}
 
 export default function ReservationsPage() {
   const router = useRouter();
 
   const [cancellationSelection, setCancellationSelection] = useState<CancellationSelection | null>(null);
   const [activeTab, setActiveTab] = useState<'confirmed' | 'cancelled'>('confirmed');
+  const [startChargingSelection, setStartChargingSelection] = useState<StartChargingSelection | null>(null);
 
   const {
     user,
     isAuthenticated,
     isLoading,
   } = useAuth();
+
+  const startChargingMutation = useStartChargingFromReservation();
 
   const canViewReservations = isAuthenticated && user?.role === 'DRIVER';
 
@@ -47,6 +58,22 @@ export default function ReservationsPage() {
     activeTab === 'confirmed'
       ? confirmedReservations
       : cancelledReservations;
+
+  const handleStartCharging = (): void => {
+    if (!startChargingSelection) return;
+
+    startChargingMutation.mutate(
+      {
+        reservationId: startChargingSelection.reservation.id,
+      },
+      {
+        onSuccess: () => {
+          setStartChargingSelection(null);
+          router.push('/charging');
+        }
+      }
+    )
+  }
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
@@ -161,11 +188,10 @@ export default function ReservationsPage() {
                 type="button"
                 role="tab"
                 aria-selected={activeTab === 'confirmed'}
-                className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                  activeTab === 'confirmed'
+                className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${activeTab === 'confirmed'
                     ? 'bg-emerald-600 text-white shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
-                }`}
+                  }`}
                 onClick={() => setActiveTab('confirmed')}
               >
                 <CheckCircle2 className="size-4" />
@@ -179,11 +205,10 @@ export default function ReservationsPage() {
                 type="button"
                 role="tab"
                 aria-selected={activeTab === 'cancelled'}
-                className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
-                  activeTab === 'cancelled'
+                className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${activeTab === 'cancelled'
                     ? 'bg-red-700 text-white shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
-                }`}
+                  }`}
                 onClick={() => setActiveTab('cancelled')}
               >
                 <XCircle className="size-4" />
@@ -208,38 +233,45 @@ export default function ReservationsPage() {
                 </h2>
               </div>
             ) : (
-            <div className="space-y-4">
-            {visibleReservations.map((reservation) => {
-              const station =
-                stationsQuery.data?.find((item) =>
-                  item.connectors.some(
-                    (connector) =>
-                      connector.id === reservation.connectorId,
-                  ),
-                ) ?? null;
+              <div className="space-y-4">
+                {visibleReservations.map((reservation) => {
+                  const station =
+                    stationsQuery.data?.find((item) =>
+                      item.connectors.some(
+                        (connector) =>
+                          connector.id === reservation.connectorId,
+                      ),
+                    ) ?? null;
 
-              const connector =
-                station?.connectors.find(
-                  (item) =>
-                    item.id === reservation.connectorId,
-                ) ?? null;
+                  const connector =
+                    station?.connectors.find(
+                      (item) =>
+                        item.id === reservation.connectorId,
+                    ) ?? null;
 
-              return (
-                <ReservationCard
-                  key={reservation.id}
-                  reservation={reservation}
-                  station={station}
-                  connector={connector}
-                  onCancel={() => {
-                    setCancellationSelection({
-                      reservation,
-                      stationName: station?.name ?? 'Bilinmeyen istasyon'
-                    })
-                  }}
-                />
-              );
-            })}
-            </div>
+                  return (
+                    <ReservationCard
+                      key={reservation.id}
+                      reservation={reservation}
+                      station={station}
+                      connector={connector}
+                      onCancel={() => {
+                        setCancellationSelection({
+                          reservation,
+                          stationName: station?.name ?? 'Bilinmeyen istasyon'
+                        })
+                      }}
+                      onStartCharging={() => {
+                        startChargingMutation.reset();
+                        setStartChargingSelection({
+                          reservation,
+                          stationName: station?.name ?? 'Bilinmeyen istasyon'
+                        })
+                      }}
+                    />
+                  );
+                })}
+              </div>
             )}
           </div>
         ) : null}
@@ -252,6 +284,28 @@ export default function ReservationsPage() {
             setCancellationSelection(null);
           }
         }}
+      />
+
+      <StartReservationChargingDialog
+        reservation={
+          startChargingSelection?.reservation ?? null
+        }
+        stationName={
+          startChargingSelection?.stationName ?? ''
+        }
+        isStarting={startChargingMutation.isPending}
+        errorMessage={
+          startChargingMutation.isError
+            ? 'Şarj oturumu başlatılamadı. Rezervasyon zamanını ve aktif şarj durumunuzu kontrol edin.'
+            : undefined
+        }
+        onOpenChange={(open) => {
+          if (!open) {
+            setStartChargingSelection(null);
+            startChargingMutation.reset();
+          }
+        }}
+        onConfirm={handleStartCharging}
       />
     </section>
   );

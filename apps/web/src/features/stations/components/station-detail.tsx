@@ -38,18 +38,29 @@ import {
 import { useStation } from "../hooks/use-stations";
 import type { Connector } from "../types/station";
 import { statusClasses, statusLabels } from "../station-constants";
+import {
+  StartWalkInChargingDialog,
+  type WalkInChargingSelection,
+} from '@/features/charge-sessions/components/start-walk-in-charging-dialog';
+import { useStartWalkInCharging } from '@/features/charge-sessions/hooks/use-start-walk-in-charging';
+import type { ReservationDurationMinutes } from '@/lib/constants';
+import { useRouter } from 'next/navigation';
 
 interface StationDetailProps {
   stationId: number;
 }
 
 export function StationDetail({ stationId }: StationDetailProps) {
+  const router = useRouter();
+
   const [reservationConnector, setReservationConnector] =
     useState<Connector | null>(null);
   const [availabilityParams, setAvailabilityParams] =
     useState<AvailabilityQueryParams | null>(null);
   const [reservationSelection, setReservationSelection] =
     useState<ReservationSelection | null>(null);
+  const [walkInSelection, setWalkInSelection] =
+    useState<WalkInChargingSelection | null>(null);
 
   const {
     data: station,
@@ -58,6 +69,8 @@ export function StationDetail({ stationId }: StationDetailProps) {
     refetch,
   } = useStation(stationId);
   const availabilityQuery = useAvailability(availabilityParams);
+
+  const walkInMutation = useStartWalkInCharging();
 
   const matchingAvailableStation = availabilityQuery.data?.stations.find(
     (item) => item.id === stationId,
@@ -91,6 +104,36 @@ export function StationDetail({ stationId }: StationDetailProps) {
   function openAvailabilityDialog(connector: Connector): void {
     setAvailabilityParams(null);
     setReservationConnector(connector);
+  }
+
+  function openWalkInDialog(connector: Connector): void {
+    if (!station) return;
+
+    walkInMutation.reset();
+
+    setWalkInSelection({
+      station,
+      connector,
+    });
+  }
+
+  function handleWalkInConfirm(
+    durationMinutes: ReservationDurationMinutes,
+  ): void {
+    if (!walkInSelection) return;
+
+    walkInMutation.mutate(
+      {
+        connectorId: walkInSelection.connector.id,
+        durationMinutes,
+      },
+      {
+        onSuccess: () => {
+          setWalkInSelection(null);
+          router.push('/charging');
+        },
+      },
+    );
   }
 
   if (isPending) {
@@ -216,6 +259,22 @@ export function StationDetail({ stationId }: StationDetailProps) {
 
                 <Button
                   type="button"
+                  variant="outline"
+                  className="col-span-2 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                  disabled={
+                    connector.currentStatus !== 'AVAILABLE'
+                  }
+                  onClick={() => openWalkInDialog(connector)}
+                >
+                  <BatteryCharging className="size-4" />
+
+                  {connector.currentStatus === 'AVAILABLE'
+                    ? 'Anlık şarj başlat'
+                    : 'Anlık şarj kullanılamıyor'}
+                </Button>
+
+                <Button
+                  type="button"
                   className="col-span-2 bg-emerald-600 hover:bg-emerald-700"
                   disabled={connector.operationalStatus !== "ACTIVE"}
                   onClick={() => openAvailabilityDialog(connector)}
@@ -303,6 +362,23 @@ export function StationDetail({ stationId }: StationDetailProps) {
             setAvailabilityParams(null);
           }
         }}
+      />
+
+      <StartWalkInChargingDialog
+        selection={walkInSelection}
+        isStarting={walkInMutation.isPending}
+        errorMessage={
+          walkInMutation.isError
+            ? 'Anlık şarj başlatılamadı. Connector durumunu ve aktif şarj oturumunuzu kontrol edin.'
+            : undefined
+        }
+        onOpenChange={(open) => {
+          if (!open) {
+            setWalkInSelection(null);
+            walkInMutation.reset();
+          }
+        }}
+        onConfirm={handleWalkInConfirm}
       />
     </div>
   )
