@@ -11,6 +11,8 @@ dist/
 .env
 .env.*
 !.env.example
+!.env.backend.example
+!.env.frontend.example
 
 # Logs
 *.log

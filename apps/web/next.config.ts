@@ -1,10 +1,16 @@
-import type { NextConfig } from "next";
-import path from "path";
+import type { NextConfig } from 'next';
+import path from 'path';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: 'standalone',
+
+  outputFileTracingRoot: path.resolve(
+    __dirname,
+    '../../',
+  ),
+
   turbopack: {
-    root: path.resolve(__dirname, "../../"),
+    root: path.resolve(__dirname, '../../'),
   },
 };
 
