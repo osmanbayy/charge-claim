@@ -32,19 +32,19 @@ export default function StaffStationsPage() {
   } = useStations();
 
   return (
-    <div className="flex-1 bg-muted/30">
+    <div className="flex-1 bg-muted/20">
       <div className="mx-auto w-full max-w-7xl space-y-8 px-4 py-10 sm:px-6">
-        <section className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+        <section className="relative overflow-hidden rounded-3xl bg-[#071f23] p-7 text-white shadow-2xl sm:flex sm:items-end sm:justify-between sm:p-9">
           <div>
-            <p className="text-sm font-medium text-emerald-700">
+            <p className="text-xs font-semibold uppercase tracking-[.2em] text-emerald-300">
               Personel yönetimi
             </p>
 
-            <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+            <h1 className="mt-3 text-4xl font-semibold tracking-[-.04em]">
               İstasyonlar
             </h1>
 
-            <p className="mt-2 text-muted-foreground">
+            <p className="mt-3 text-slate-300">
               İstanbul’daki şarj istasyonlarını ve connector’larını yönetin.
             </p>
           </div>
@@ -53,7 +53,7 @@ export default function StaffStationsPage() {
             href="/staff/stations/new"
             className={cn(
               buttonVariants(),
-              "bg-emerald-600 hover:bg-emerald-700 text-white",
+              "mt-6 bg-emerald-300 text-[#062125] hover:bg-emerald-200 sm:mt-0",
             )}
           >
             <Plus data-icon="inline-start" className="size-4" />
@@ -122,7 +122,7 @@ export default function StaffStationsPage() {
                   station.connectors.filter((connector) => connector.currentStatus === 'AVAILABLE').length;
 
                 return (
-                  <Card key={station.id} className="flex flex-col">
+                  <Card key={station.id} className="group flex flex-col rounded-3xl border-white/80 bg-card/90 shadow-[0_18px_55px_-40px_oklch(0.16_0.06_210/.7)] transition-all hover:-translate-y-1 hover:border-emerald-300/70">
                     <CardHeader>
                       <div className="flex items-start justify-between gap-3">
                         <div>

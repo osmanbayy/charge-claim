@@ -102,7 +102,7 @@ export function StatisticsFilterForm({
 
   return (
     <form
-      className="grid gap-4 rounded-2xl border bg-card p-5 lg:grid-cols-[1fr_1fr_1.4fr_auto] lg:items-end"
+      className="grid gap-4 rounded-2xl border border-white/80 bg-card/80 p-5 shadow-sm lg:grid-cols-[1fr_1fr_1.4fr_auto] lg:items-end"
       onSubmit={handleSubmit}
     >
       <div className="space-y-2">

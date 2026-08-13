@@ -43,4 +43,13 @@ export interface CreateStationInput {
   longitude: number;
 }
 
+export type UpdateStationInput = Partial<CreateStationInput>;
+
+export interface CreateConnectorInput {
+  code: string;
+  type: ConnectorType;
+  powerKw: string;
+  pricePerKWh: string;
+}
+
 export type CreatedStation = Omit<Station, "connectors">;

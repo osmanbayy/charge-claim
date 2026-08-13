@@ -23,35 +23,35 @@ const summaryItems = [
     label: 'Toplam connector',
     icon: PlugZap,
     className:
-      'border-slate-200 bg-slate-50 text-slate-700',
+      'border-slate-200/80 bg-white/80 text-slate-700',
   },
   {
     key: 'available',
     label: 'Müsait',
     icon: CircleCheck,
     className:
-      'border-emerald-200 bg-emerald-50 text-emerald-700',
+      'border-emerald-200 bg-gradient-to-br from-white to-emerald-50 text-emerald-700',
   },
   {
     key: 'occupied',
     label: 'Kullanımda',
     icon: CircleDot,
     className:
-      'border-blue-200 bg-blue-50 text-blue-700',
+      'border-blue-200 bg-gradient-to-br from-white to-blue-50 text-blue-700',
   },
   {
     key: 'reserved',
     label: 'Rezerve',
     icon: ShieldAlert,
     className:
-      'border-amber-200 bg-amber-50 text-amber-700',
+      'border-amber-200 bg-gradient-to-br from-white to-amber-50 text-amber-700',
   },
   {
     key: 'maintenance',
     label: 'Bakımda',
     icon: Wrench,
     className:
-      'border-red-200 bg-red-50 text-red-700',
+      'border-red-200 bg-gradient-to-br from-white to-red-50 text-red-700',
   },
 ] as const satisfies ReadonlyArray<{
   key: keyof ConnectorStatusSummary;
@@ -71,7 +71,7 @@ export function ConnectorSummaryCards({
         return (
           <Card
             key={item.key}
-            className={item.className}
+            className={`${item.className} rounded-2xl shadow-[0_16px_45px_-38px_currentColor] transition-transform hover:-translate-y-0.5`}
           >
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between gap-3">
@@ -84,7 +84,7 @@ export function ConnectorSummaryCards({
             </CardHeader>
 
             <CardContent>
-              <p className="text-3xl font-semibold">
+              <p className="text-3xl font-semibold tracking-[-.04em]">
                 {summary[item.key]}
               </p>
             </CardContent>

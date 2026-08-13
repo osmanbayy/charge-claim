@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { CalendarSearch, RefreshCw, Map, LayoutGrid } from 'lucide-react';
+import { CalendarSearch, RefreshCw, Map, LayoutGrid, ArrowDown, Zap, ShieldCheck, Clock3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AvailabilitySearchForm } from '@/features/availability/components/availability-search-form';
@@ -80,31 +80,43 @@ export default function StationsPage() {
 
   return (
     <section className="flex-1">
-      <div className="relative isolate overflow-hidden bg-[#071b20] text-white">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_75%_20%,oklch(0.72_0.18_158/.28),transparent_28rem),linear-gradient(115deg,transparent_40%,oklch(0.35_0.08_205/.3))]" />
-        <div className="absolute -right-24 top-1/2 -z-10 size-80 -translate-y-1/2 rounded-full border border-white/10" />
-        <div className="absolute -right-4 top-1/2 -z-10 size-56 -translate-y-1/2 rounded-full border border-primary/20" />
-        <div className="mx-auto w-full max-w-7xl px-4 py-18 sm:px-6 sm:py-24 lg:px-8">
+      <div className="relative isolate overflow-hidden bg-[#061b1f] text-white">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_78%_18%,oklch(0.73_0.17_164/.3),transparent_25rem),radial-gradient(circle_at_5%_100%,oklch(0.42_0.08_230/.28),transparent_28rem)]" />
+        <div className="absolute inset-0 -z-10 opacity-[.06] [background-image:linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] [background-size:72px_72px]" />
+        <div className="absolute -right-20 top-1/2 -z-10 size-125 -translate-y-1/2 rounded-full border border-white/8" />
+        <div className="absolute right-12 top-1/2 -z-10 size-80 -translate-y-1/2 rounded-full border border-emerald-300/12" />
+        <div className="mx-auto grid w-full max-w-7xl gap-12 px-4 py-18 sm:px-6 sm:py-24 lg:grid-cols-[1fr_360px] lg:items-end lg:px-8 lg:py-28">
+          <div>
           <p className="inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[.2em] text-emerald-200">
-            İstanbul şarj ağı
+            <span className="mr-2 inline-block size-1.5 animate-pulse rounded-full bg-emerald-300" /> İstanbul şarj ağı
           </p>
 
-          <h1 className="mt-5 max-w-3xl text-4xl font-bold leading-[1.05] tracking-[-.04em] sm:text-6xl">
-            Şarj noktalarını keşfet
+          <h1 className="mt-6 max-w-3xl text-5xl font-semibold leading-[.98] tracking-[-.055em] sm:text-7xl">
+            Şehrin enerjisi<br /><span className="bg-gradient-to-r from-emerald-300 to-cyan-200 bg-clip-text text-transparent">sana hazır.</span>
           </h1>
 
-          <p className="mt-6 max-w-xl text-base leading-7 text-slate-300 sm:text-lg">
+          <p className="mt-7 max-w-xl text-base leading-7 text-slate-300 sm:text-lg">
             Tarih, saat ve konnektör özelliklerini seçerek uygun
             şarj noktalarını görüntüle.
           </p>
+          <a href="#stations" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-emerald-200 transition-colors hover:text-white">İstasyonları keşfet <ArrowDown className="size-4" /></a>
+          </div>
+          <div className="grid grid-cols-3 gap-2 rounded-3xl border border-white/10 bg-white/[.06] p-3 shadow-2xl backdrop-blur-xl lg:grid-cols-1">
+            {[{ icon: Zap, label: 'Anlık durum', text: 'Canlı bağlantı' }, { icon: Clock3, label: 'Planlı şarj', text: 'Kolay rezervasyon' }, { icon: ShieldCheck, label: 'Güvenli ağ', text: 'Doğrulanmış istasyonlar' }].map(({ icon: Icon, label, text }) => (
+              <div key={label} className="flex flex-col gap-3 rounded-2xl border border-white/8 bg-black/10 p-4 sm:flex-row sm:items-center">
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-300/10 text-emerald-300"><Icon className="size-5" /></span>
+                <div><p className="text-sm font-semibold">{label}</p><p className="mt-0.5 text-xs text-slate-400">{text}</p></div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-7xl space-y-8 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+      <div id="stations" className="mx-auto w-full max-w-7xl space-y-8 scroll-mt-24 px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div>
-          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="premium-panel mb-8 flex flex-col gap-5 rounded-3xl p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight">
+              <h2 className="text-2xl font-semibold tracking-[-.03em]">
                 {isAvailabilityMode
                   ? 'Müsait istasyonlar'
                   : 'İstasyonlar'}
@@ -134,7 +146,7 @@ export default function StationsPage() {
               <div
                 role="group"
                 aria-label="İstasyon görünümü"
-                className="inline-flex rounded-xl border border-white/70 bg-background/70 p-1 shadow-sm backdrop-blur"
+                className="inline-flex rounded-xl border border-border/70 bg-muted/60 p-1"
               >
                 <Button
                   type="button"

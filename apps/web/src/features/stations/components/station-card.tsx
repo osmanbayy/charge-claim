@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { MapPin, Plug } from 'lucide-react';
+import { MapPin, Plug, ArrowUpRight, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import {
   Card,
@@ -30,13 +30,14 @@ export function StationCard({ station }: StationCardProps) {
   return (
     <Link
       href={`/stations/${station.id}`}
-      className="block h-full rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="group block h-full rounded-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <Card className="h-full">
+      <Card className="h-full overflow-hidden rounded-3xl border-white/80 bg-card/90 shadow-[0_18px_55px_-38px_oklch(0.16_0.06_210/.65)] transition-all duration-300 group-hover:-translate-y-1 group-hover:border-emerald-300/60 group-hover:shadow-[0_28px_65px_-38px_oklch(0.45_0.13_170/.65)]">
+        <div className="h-1 w-full bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300 opacity-0 transition-opacity group-hover:opacity-100" />
         <CardHeader className="space-y-3">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2">
-              <CardTitle>{station.name}</CardTitle>
+              <CardTitle className="flex items-center gap-2 text-lg tracking-[-.02em]">{station.name}<ArrowUpRight className="size-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-emerald-600" /></CardTitle>
 
               <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                 <MapPin className="size-4 shrink-0" />
@@ -48,7 +49,7 @@ export function StationCard({ station }: StationCardProps) {
               variant="outline"
               className="shrink-0 border-emerald-200 bg-emerald-50 text-emerald-700"
             >
-              {availableConnectorCount} müsait
+              <span className="mr-1 inline-block size-1.5 rounded-full bg-emerald-500" />{availableConnectorCount} müsait
             </Badge>
           </div>
 
@@ -58,18 +59,18 @@ export function StationCard({ station }: StationCardProps) {
         </CardHeader>
 
         <CardContent className="space-y-3">
-          <div className="flex items-center gap-2 text-sm font-medium">
-            <Plug className="size-4 text-primary" />
+          <div className="flex items-center justify-between gap-2 border-t border-border/60 pt-4 text-sm font-medium">
+            <span className="flex items-center gap-2"><Plug className="size-4 text-primary" />
             <span>
               {station.connectors.length} konnektör
-            </span>
+            </span></span><Zap className="size-4 text-amber-500" />
           </div>
 
           <div className="space-y-2">
             {station.connectors.map((connector) => (
               <div
                 key={connector.id}
-                className="flex items-center justify-between gap-3 rounded-lg border bg-background px-3 py-2.5"
+                className="flex items-center justify-between gap-3 rounded-xl border border-border/70 bg-background/65 px-3.5 py-3 transition-colors group-hover:bg-white/80"
               >
                 <div>
                   <p className="text-sm font-medium">

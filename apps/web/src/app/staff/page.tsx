@@ -73,25 +73,27 @@ export default function StaffPage() {
   }
 
   return (
-    <div className="flex-1 bg-muted/30">
-      <div className="mx-auto w-full max-w-7xl space-y-10 px-4 py-10 sm:px-6 lg:px-8">
-        <section className="rounded-2xl bg-emerald-700 px-6 py-10 text-white sm:px-10">
+    <div className="flex-1 bg-muted/20">
+      <div className="mx-auto w-full max-w-7xl space-y-12 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+        <section className="relative isolate overflow-hidden rounded-[2rem] bg-[#061f23] px-6 py-12 text-white shadow-[0_32px_80px_-38px_oklch(0.15_0.08_200/.8)] sm:px-10 lg:px-12">
+          <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_82%_20%,oklch(0.7_0.16_165/.3),transparent_24rem)]" />
+          <div className="absolute inset-0 -z-10 opacity-[.05] bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-size-[64px_64px]" />
           <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
             <div className="flex max-w-2xl flex-col gap-4">
-              <div className="flex size-12 items-center justify-center rounded-xl bg-white/15">
+              <div className="flex size-12 items-center justify-center rounded-2xl border border-emerald-300/20 bg-emerald-300/10 text-emerald-300">
                 <ShieldCheck className="size-6" />
               </div>
 
               <div>
-                <p className="text-sm font-medium text-emerald-100">
+                <p className="text-xs font-semibold uppercase tracking-[.2em] text-emerald-300">
                   Personel yönetim alanı
                 </p>
 
-                <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+                <h1 className="mt-3 text-4xl font-semibold tracking-[-.045em] sm:text-5xl">
                   Operasyon dashboard&apos;u
                 </h1>
 
-                <p className="mt-3 text-emerald-50/90">
+                <p className="mt-4 max-w-xl leading-7 text-slate-300">
                   Şarj ağının canlı durumunu takip edin,
                   istatistikleri inceleyin ve istasyonları
                   yönetin.
@@ -101,9 +103,7 @@ export default function StaffPage() {
 
             <Link
               href="/staff/stations"
-              className={buttonVariants({
-                variant: 'outline',
-              })}
+              className={buttonVariants({ className: 'bg-emerald-300 text-[#062125] hover:bg-emerald-200' })}
             >
               <MapPinned className="size-4" />
               İstasyonları yönet
@@ -113,12 +113,12 @@ export default function StaffPage() {
         </section>
 
         <section>
-          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+          <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
             <div>
               <div className="flex items-center gap-2">
                 <Activity className="size-5 text-emerald-600" />
 
-                <h2 className="text-2xl font-semibold">
+                <h2 className="text-2xl font-semibold tracking-[-.03em]">
                   Canlı operasyon
                 </h2>
               </div>
@@ -209,9 +209,9 @@ export default function StaffPage() {
           ) : null}
         </section>
 
-        <section className="space-y-5">
+        <section className="space-y-6 rounded-3xl border border-white/75 bg-white/45 p-5 shadow-[0_24px_70px_-45px_oklch(0.16_0.06_210/.6)] backdrop-blur-xl sm:p-7">
           <div>
-            <h2 className="text-2xl font-semibold">
+            <h2 className="text-2xl font-semibold tracking-[-.03em]">
               Tarih aralığı istatistikleri
             </h2>
 
@@ -275,7 +275,7 @@ export default function StaffPage() {
         </section>
 
         <section>
-          <Card>
+          <Card className="overflow-hidden rounded-3xl border-emerald-200/70 bg-linear-to-br from-white to-emerald-50/70 shadow-[0_20px_60px_-42px_oklch(0.45_0.13_170/.7)]">
             <CardHeader>
               <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
                 <MapPinned className="size-5" />
