@@ -183,7 +183,8 @@ export function StationDetail({ stationId }: StationDetailProps) {
         İstasyonlara dön
       </Link>
 
-      <section className="rounded-2xl bg-linear-to-br from-emerald-950 to-teal-800 p-6 text-white shadow-xl sm:p-8">
+      <section className="relative isolate overflow-hidden rounded-3xl border border-white/8 bg-[#0d1820] p-6 text-white shadow-2xl sm:p-8">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_85%_20%,oklch(0.66_0.15_166/.2),transparent_22rem)]" />
         <div className="flex items-start gap-4">
           <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-white/10">
             <BatteryCharging className="size-6" />
@@ -194,11 +195,11 @@ export function StationDetail({ stationId }: StationDetailProps) {
               {station.district}
             </p>
 
-            <h1 className="mt-1 text-2xl font-semibold sm:text-3xl">
+            <h1 className="mt-1 text-3xl font-semibold tracking-[-.035em] sm:text-4xl">
               {station.name}
             </h1>
 
-            <p className="mt-3 flex items-start gap-2 text-sm text-emerald-100">
+            <p className="mt-3 flex items-start gap-2 text-sm text-slate-300">
               <MapPin className="mt-0.5 size-4 shrink-0" />
               {station.address}
             </p>

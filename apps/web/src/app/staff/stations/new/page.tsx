@@ -50,7 +50,7 @@ export default function NewStationPage() {
   }
 
   return (
-    <div className="flex-1 bg-muted/30">
+    <div className="flex-1 bg-muted/10">
       <div className="mx-auto w-full max-w-3xl space-y-6 px-4 py-10 sm:px-6">
         <Link
           href="/staff/stations"
@@ -60,9 +60,9 @@ export default function NewStationPage() {
           İstasyonlara dön
         </Link>
 
-        <Card>
+        <Card className="rounded-3xl border-white/8 bg-card/90">
           <CardHeader>
-            <div className="mb-2 flex size-11 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+            <div className="mb-2 flex size-11 items-center justify-center rounded-xl bg-emerald-400/10 text-emerald-300">
               <MapPinned className="size-5" />
             </div>
 

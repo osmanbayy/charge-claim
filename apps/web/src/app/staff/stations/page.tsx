@@ -122,7 +122,7 @@ export default function StaffStationsPage() {
                   station.connectors.filter((connector) => connector.currentStatus === 'AVAILABLE').length;
 
                 return (
-                  <Card key={station.id} className="group flex flex-col rounded-3xl border-white/80 bg-card/90 shadow-[0_18px_55px_-40px_oklch(0.16_0.06_210/.7)] transition-all hover:-translate-y-1 hover:border-emerald-300/70">
+                  <Card key={station.id} className="group flex flex-col rounded-3xl border-white/8 bg-card/90 shadow-[0_18px_55px_-40px_black] transition-all hover:-translate-y-1 hover:border-emerald-300/30">
                     <CardHeader>
                       <div className="flex items-start justify-between gap-3">
                         <div>

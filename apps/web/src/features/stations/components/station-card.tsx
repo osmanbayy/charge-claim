@@ -32,7 +32,7 @@ export function StationCard({ station }: StationCardProps) {
       href={`/stations/${station.id}`}
       className="group block h-full rounded-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
-      <Card className="h-full overflow-hidden rounded-3xl border-white/80 bg-card/90 shadow-[0_18px_55px_-38px_oklch(0.16_0.06_210/.65)] transition-all duration-300 group-hover:-translate-y-1 group-hover:border-emerald-300/60 group-hover:shadow-[0_28px_65px_-38px_oklch(0.45_0.13_170/.65)]">
+      <Card className="h-full overflow-hidden rounded-3xl border-white/8 bg-card/90 transition-all duration-300 group-hover:-translate-y-1 group-hover:border-emerald-300/30">
         <div className="h-1 w-full bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300 opacity-0 transition-opacity group-hover:opacity-100" />
         <CardHeader className="space-y-3">
           <div className="flex items-start justify-between gap-4">
@@ -47,7 +47,7 @@ export function StationCard({ station }: StationCardProps) {
 
             <Badge
               variant="outline"
-              className="shrink-0 border-emerald-200 bg-emerald-50 text-emerald-700"
+              className="shrink-0 border-emerald-400/20 bg-emerald-400/10 text-emerald-300"
             >
               <span className="mr-1 inline-block size-1.5 rounded-full bg-emerald-500" />{availableConnectorCount} müsait
             </Badge>
@@ -70,7 +70,7 @@ export function StationCard({ station }: StationCardProps) {
             {station.connectors.map((connector) => (
               <div
                 key={connector.id}
-                className="flex items-center justify-between gap-3 rounded-xl border border-border/70 bg-background/65 px-3.5 py-3 transition-colors group-hover:bg-white/80"
+                className="flex items-center justify-between gap-3 rounded-xl border border-border/70 bg-background/45 px-3.5 py-3 transition-colors group-hover:bg-white/[.035]"
               >
                 <div>
                   <p className="text-sm font-medium">

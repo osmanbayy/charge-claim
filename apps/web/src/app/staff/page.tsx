@@ -209,7 +209,7 @@ export default function StaffPage() {
           ) : null}
         </section>
 
-        <section className="space-y-6 rounded-3xl border border-white/75 bg-white/45 p-5 shadow-[0_24px_70px_-45px_oklch(0.16_0.06_210/.6)] backdrop-blur-xl sm:p-7">
+        <section className="space-y-6 rounded-3xl border border-white/8 bg-white/[.025] p-5 shadow-[0_24px_70px_-45px_black] backdrop-blur-xl sm:p-7">
           <div>
             <h2 className="text-2xl font-semibold tracking-[-.03em]">
               Tarih aralığı istatistikleri
@@ -275,9 +275,9 @@ export default function StaffPage() {
         </section>
 
         <section>
-          <Card className="overflow-hidden rounded-3xl border-emerald-200/70 bg-linear-to-br from-white to-emerald-50/70 shadow-[0_20px_60px_-42px_oklch(0.45_0.13_170/.7)]">
+          <Card className="overflow-hidden rounded-3xl border-emerald-400/15 bg-card shadow-[0_20px_60px_-42px_black]">
             <CardHeader>
-              <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
+              <div className="mb-2 flex size-10 items-center justify-center rounded-lg bg-emerald-400/10 text-emerald-300">
                 <MapPinned className="size-5" />
               </div>
 

@@ -23,35 +23,35 @@ const summaryItems = [
     label: 'Toplam connector',
     icon: PlugZap,
     className:
-      'border-slate-200/80 bg-white/80 text-slate-700',
+      'border-white/8 bg-card text-slate-300',
   },
   {
     key: 'available',
     label: 'Müsait',
     icon: CircleCheck,
     className:
-      'border-emerald-200 bg-gradient-to-br from-white to-emerald-50 text-emerald-700',
+      'border-emerald-400/15 bg-card text-emerald-300',
   },
   {
     key: 'occupied',
     label: 'Kullanımda',
     icon: CircleDot,
     className:
-      'border-blue-200 bg-gradient-to-br from-white to-blue-50 text-blue-700',
+      'border-sky-400/15 bg-card text-sky-300',
   },
   {
     key: 'reserved',
     label: 'Rezerve',
     icon: ShieldAlert,
     className:
-      'border-amber-200 bg-gradient-to-br from-white to-amber-50 text-amber-700',
+      'border-amber-400/15 bg-card text-amber-300',
   },
   {
     key: 'maintenance',
     label: 'Bakımda',
     icon: Wrench,
     className:
-      'border-red-200 bg-gradient-to-br from-white to-red-50 text-red-700',
+      'border-rose-400/15 bg-card text-rose-300',
   },
 ] as const satisfies ReadonlyArray<{
   key: keyof ConnectorStatusSummary;

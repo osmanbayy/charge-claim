@@ -44,10 +44,11 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center bg-muted/30 px-4 py-12">
-      <Card className="w-full max-w-md">
+    <div className="relative flex flex-1 items-center justify-center overflow-hidden px-4 py-16">
+      <div className="absolute left-1/2 top-1/3 -z-10 size-96 -translate-x-1/2 rounded-full bg-emerald-400/8 blur-3xl" />
+      <Card className="w-full max-w-md rounded-3xl border-white/10 bg-card/90 shadow-[0_30px_100px_-45px_black]">
         <CardHeader className="space-y-3 text-center">
-          <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+          <div className="mx-auto flex size-12 items-center justify-center rounded-2xl border border-emerald-300/15 bg-emerald-300/10 text-emerald-300">
             <LogIn className="size-6" />
           </div>
 
@@ -107,7 +108,7 @@ export default function LoginPage() {
             Henüz hesabınız yok mu?{" "}
             <Link
               href="/register"
-              className="font-medium text-emerald-700 hover:underline"
+              className="font-medium text-emerald-300 hover:text-emerald-200 hover:underline"
             >
               Kayıt olun
             </Link>

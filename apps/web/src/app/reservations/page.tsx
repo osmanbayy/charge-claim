@@ -106,18 +106,19 @@ export default function ReservationsPage() {
 
   return (
     <section className="flex-1">
-      <div className="border-b bg-emerald-950 text-white">
-        <div className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6">
+      <div className="relative isolate overflow-hidden border-b border-white/8 bg-[#0d1820] text-white">
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_80%_10%,oklch(0.65_0.14_166/.18),transparent_24rem)]" />
+        <div className="mx-auto w-full max-w-5xl px-4 py-14 sm:px-6">
           <div className="flex items-center gap-2 text-sm text-emerald-200">
             <CalendarDays className="size-4" />
             Sürücü hesabı
           </div>
 
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+          <h1 className="mt-3 text-4xl font-semibold tracking-[-.04em]">
             Rezervasyonlarım
           </h1>
 
-          <p className="mt-3 text-sm text-emerald-100">
+          <p className="mt-3 text-sm text-slate-300">
             Gelecek ve geçmiş şarj rezervasyonlarınızı
             görüntüleyin.
           </p>

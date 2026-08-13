@@ -43,7 +43,7 @@ export function StatisticsCards({
       ),
       icon: CalendarDays,
       className:
-        'border-slate-200 bg-slate-50 text-slate-700',
+        'border-white/8 bg-card text-slate-300',
     },
     {
       key: 'completed-reservations',
@@ -53,7 +53,7 @@ export function StatisticsCards({
       ),
       icon: CalendarCheck,
       className:
-        'border-emerald-200 bg-emerald-50 text-emerald-700',
+        'border-emerald-400/15 bg-card text-emerald-300',
     },
     {
       key: 'cancelled-reservations',
@@ -63,7 +63,7 @@ export function StatisticsCards({
       ),
       icon: Ban,
       className:
-        'border-red-200 bg-red-50 text-red-700',
+        'border-rose-400/15 bg-card text-rose-300',
     },
     {
       key: 'no-show',
@@ -76,7 +76,7 @@ export function StatisticsCards({
       )} oran`,
       icon: UserX,
       className:
-        'border-amber-200 bg-amber-50 text-amber-700',
+        'border-amber-400/15 bg-card text-amber-300',
     },
     {
       key: 'completed-sessions',
@@ -86,7 +86,7 @@ export function StatisticsCards({
       ),
       icon: BatteryCharging,
       className:
-        'border-blue-200 bg-blue-50 text-blue-700',
+        'border-sky-400/15 bg-card text-sky-300',
     },
     {
       key: 'energy',
@@ -96,7 +96,7 @@ export function StatisticsCards({
       )} kWh`,
       icon: Gauge,
       className:
-        'border-cyan-200 bg-cyan-50 text-cyan-700',
+        'border-cyan-400/15 bg-card text-cyan-300',
     },
     {
       key: 'revenue',
@@ -106,7 +106,7 @@ export function StatisticsCards({
       )} TL`,
       icon: CircleDollarSign,
       className:
-        'border-violet-200 bg-violet-50 text-violet-700',
+        'border-violet-400/15 bg-card text-violet-300',
     },
   ];
 

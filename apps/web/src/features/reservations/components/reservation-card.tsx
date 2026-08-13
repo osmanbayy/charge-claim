@@ -24,11 +24,11 @@ const statusLabels: Record<ReservationStatus, string> = {
 };
 
 const statusClasses: Record<ReservationStatus, string> = {
-  CONFIRMED: 'border-emerald-200 bg-emerald-50 text-emerald-700',
-  IN_PROGRESS: 'border-blue-200 bg-blue-50 text-blue-700',
+  CONFIRMED: 'border-emerald-400/20 bg-emerald-400/10 text-emerald-300',
+  IN_PROGRESS: 'border-sky-400/20 bg-sky-400/10 text-sky-300',
   COMPLETED: 'border-zinc-200 bg-zinc-50 text-zinc-700',
-  CANCELLED: 'border-red-200 bg-red-50 text-red-700',
-  NO_SHOW: 'border-amber-200 bg-amber-50 text-amber-700',
+  CANCELLED: 'border-rose-400/20 bg-rose-400/10 text-rose-300',
+  NO_SHOW: 'border-amber-400/20 bg-amber-400/10 text-amber-300',
 };
 
 export function ReservationCard({

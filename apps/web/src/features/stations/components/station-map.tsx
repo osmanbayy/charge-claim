@@ -43,14 +43,14 @@ export function StationMap({
   );
 
   return (
-    <div className="h-105 overflow-hidden rounded-2xl border border-white/70 shadow-[0_24px_70px_-35px_oklch(0.18_0.07_205/.7)] sm:h-130">
+    <div className="h-105 overflow-hidden rounded-3xl border border-white/8 shadow-[0_24px_70px_-35px_black] sm:h-130">
       <Map
         initialViewState={{
           longitude: ISTANBUL_LONGITUDE,
           latitude: ISTANBUL_LATITUDE,
           zoom: 9.5,
         }}
-        mapStyle="https://tiles.openfreemap.org/styles/liberty"
+        mapStyle="https://tiles.openfreemap.org/styles/dark"
         style={{
           width: '100%',
           height: '100%',
