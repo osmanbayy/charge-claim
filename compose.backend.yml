@@ -55,6 +55,24 @@ services:
       postgres:
         condition: service_healthy
     restart: "no"
+  
+  seed:
+    <<: *api-image
+    command:
+      - node
+      - apps/api/dist/core/database/postgres/drizzle/seed-production.js
+    env_file:
+      - .env.backend
+    environment:
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    profiles:
+      - tools
+    restart: "no"
 
   api:
     <<: *api-image

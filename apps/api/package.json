@@ -17,6 +17,7 @@
     "db:migrate": "drizzle-kit migrate --config=drizzle.config.ts",
     "db:migrate:prod": "node dist/core/database/postgres/drizzle/migrate.js",
     "db:seed": "tsx src/core/database/postgres/drizzle/seed.ts",
+    "db:seed:prod": "node dist/core/database/postgres/drizzle/seed-production.js",
     "start:worker": "nest start --entryFile worker",
     "start:worker:dev": "node --watch -r ts-node/register -r tsconfig-paths/register src/worker.ts",
     "start:worker:prod": "node dist/worker"
