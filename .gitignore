@@ -63,3 +63,5 @@ yarn-error.log*
 next-env.d.ts
 
 /sql-codes
+
+commands.txt
