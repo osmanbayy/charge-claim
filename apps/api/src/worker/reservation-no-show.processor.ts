@@ -8,7 +8,9 @@ import {
 } from '../common/queues/reservation-no-show.queue';
 import { MailService } from '../core/mail/mail.service';
 import { PostgresDatabaseService } from '../core/database/postgres/postgres-database.service';
-import { ReservationsRepository } from '../modules/reservations/repositories/reservations.repository';
+import { ReservationQueryRepository } from '../modules/reservations/repositories/reservation-query.repository';
+import { ReservationCommandRepository } from '../modules/reservations/repositories/reservation-command.repository';
+import { NoShowNotificationRepository } from '../modules/reservations/repositories/no-show-notification.repository';
 
 interface NoShowProcessingResult {
   wasMarkedAsNoShow: boolean;
@@ -21,7 +23,9 @@ export class ReservationNoShowProcessor extends WorkerHost {
 
   constructor(
     private readonly postgresDbService: PostgresDatabaseService,
-    private readonly reservationsRepository: ReservationsRepository,
+    private readonly reservationQueries: ReservationQueryRepository,
+    private readonly reservationCommands: ReservationCommandRepository,
+    private readonly noShowNotifications: NoShowNotificationRepository,
     private readonly mailService: MailService,
   ) {
     super();
@@ -36,11 +40,10 @@ export class ReservationNoShowProcessor extends WorkerHost {
 
     const processingResult = await this.postgresDbService.database.transaction(
       async (transaction): Promise<NoShowProcessingResult> => {
-        const reservation =
-          await this.reservationsRepository.findReservationByIdForUpdate(
-            transaction,
-            reservationId,
-          );
+        const reservation = await this.reservationQueries.findByIdForUpdate(
+          transaction,
+          reservationId,
+        );
 
         if (reservation === null) {
           this.logger.warn(`Reservation ${reservationId} was not found.`);
@@ -73,12 +76,11 @@ export class ReservationNoShowProcessor extends WorkerHost {
           );
         }
 
-        const noShowReservation =
-          await this.reservationsRepository.markReservationAsNoShow(
-            transaction,
-            reservationId,
-            processedAt,
-          );
+        const noShowReservation = await this.reservationCommands.markAsNoShow(
+          transaction,
+          reservationId,
+          processedAt,
+        );
 
         const wasMarkedAsNoShow = noShowReservation !== null;
 
@@ -104,9 +106,7 @@ export class ReservationNoShowProcessor extends WorkerHost {
 
   private async sendNoShowEmail(reservationId: number): Promise<void> {
     const notification =
-      await this.reservationsRepository.findPendingNoShowNotification(
-        reservationId,
-      );
+      await this.noShowNotifications.findPendingNotification(reservationId);
 
     if (notification === null) {
       this.logger.log(
@@ -123,11 +123,10 @@ export class ReservationNoShowProcessor extends WorkerHost {
       reservationStartAt: notification.reservationStartAt,
     });
 
-    const wasMarkedAsSent =
-      await this.reservationsRepository.markNoShowEmailAsSent(
-        reservationId,
-        new Date(),
-      );
+    const wasMarkedAsSent = await this.noShowNotifications.markEmailAsSent(
+      reservationId,
+      new Date(),
+    );
 
     if (!wasMarkedAsSent) {
       this.logger.warn(

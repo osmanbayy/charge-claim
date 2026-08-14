@@ -3,7 +3,10 @@ import { AppConfigModule } from '../../core/config/app-config.module';
 import { PostgresDatabaseModule } from '../../core/database/postgres/postgres-database.module';
 import { AuthModule } from '../auth/auth.module';
 import { ReservationsController } from './reservations.controller';
-import { ReservationsRepository } from './repositories/reservations.repository';
+import { ReservationQueryRepository } from './repositories/reservation-query.repository';
+import { ReservationCommandRepository } from './repositories/reservation-command.repository';
+import { ReservationConflictRepository } from './repositories/reservation-conflict.repository';
+import { NoShowNotificationRepository } from './repositories/no-show-notification.repository';
 import { ReservationsService } from './reservations.service';
 import { BullModule } from '@nestjs/bullmq';
 import { RESERVATION_NO_SHOW_QUEUE } from '../../common/queues/reservation-no-show.queue';
@@ -19,10 +22,17 @@ import { ReservationNoShowQueueService } from './queues/reservation-no-show-queu
   ],
   controllers: [ReservationsController],
   providers: [
-    ReservationsRepository,
+    ReservationQueryRepository,
+    ReservationCommandRepository,
+    ReservationConflictRepository,
+    NoShowNotificationRepository,
     ReservationsService,
     ReservationNoShowQueueService,
   ],
-  exports: [ReservationsRepository],
+  exports: [
+    ReservationQueryRepository,
+    ReservationCommandRepository,
+    ReservationConflictRepository,
+  ],
 })
 export class ReservationsModule {}

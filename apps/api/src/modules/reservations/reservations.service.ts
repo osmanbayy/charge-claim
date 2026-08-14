@@ -9,7 +9,9 @@ import { AppConfigService } from '../../core/config/app-config.service';
 import type { CreateReservationDto } from './dto/create-reservation.dto';
 import { MILLISECONDS_PER_MINUTE } from '../../common/constants';
 import { PostgresDatabaseService } from '../../core/database/postgres/postgres-database.service';
-import { ReservationsRepository } from './repositories/reservations.repository';
+import { ReservationQueryRepository } from './repositories/reservation-query.repository';
+import { ReservationCommandRepository } from './repositories/reservation-command.repository';
+import { ReservationConflictRepository } from './repositories/reservation-conflict.repository';
 import type { ReservationEntity } from './entities/reservation.entity';
 import {
   hasPostgresErrorCode,
@@ -24,7 +26,9 @@ export class ReservationsService {
   constructor(
     private readonly appConfigService: AppConfigService,
     private readonly postgresDbService: PostgresDatabaseService,
-    private readonly reservationsRepository: ReservationsRepository,
+    private readonly reservationQueries: ReservationQueryRepository,
+    private readonly reservationCommands: ReservationCommandRepository,
+    private readonly reservationConflicts: ReservationConflictRepository,
     private readonly noShowQueueService: ReservationNoShowQueueService,
   ) {}
 
@@ -44,7 +48,7 @@ export class ReservationsService {
         async (transaction) => {
           // lock the connector row
           const connector =
-            await this.reservationsRepository.findConnectorByIdForUpdate(
+            await this.reservationConflicts.findConnectorByIdForUpdate(
               transaction,
               createReservationDto.connectorId,
             );
@@ -58,7 +62,7 @@ export class ReservationsService {
 
           // check for overlapping reservation
           const hasOverlappingReservation =
-            await this.reservationsRepository.hasOverlappingReservation(
+            await this.reservationConflicts.hasOverlappingReservation(
               transaction,
               connector.id,
               startAt,
@@ -69,7 +73,7 @@ export class ReservationsService {
 
           // check for overlapping actice charging session
           const hasOverlappingActiveChargingSession =
-            await this.reservationsRepository.hasOverlappingActiveChargeSession(
+            await this.reservationConflicts.hasOverlappingActiveChargingSession(
               transaction,
               connector.id,
               startAt,
@@ -79,7 +83,7 @@ export class ReservationsService {
             throw this.createTimeConflictException();
 
           // if evething is ok -> reservation insert
-          return this.reservationsRepository.createReservation(transaction, {
+          return this.reservationCommands.create(transaction, {
             userId,
             connectorId: connector.id,
             startAt,
@@ -114,18 +118,17 @@ export class ReservationsService {
   }
 
   findReservationsByUserId(userId: number): Promise<ReservationEntity[]> {
-    return this.reservationsRepository.findReservationsByUserId(userId);
+    return this.reservationQueries.findByUserId(userId);
   }
 
   async findReservationByIdAndUserId(
     reservationId: number,
     userId: number,
   ): Promise<ReservationEntity | null> {
-    const reservation =
-      await this.reservationsRepository.findReservationByIdAndUserId(
-        userId,
-        reservationId,
-      );
+    const reservation = await this.reservationQueries.findByIdAndUserId(
+      userId,
+      reservationId,
+    );
     if (reservation === null)
       throw new NotFoundException('Reservation not found.');
 
@@ -140,7 +143,7 @@ export class ReservationsService {
     return this.postgresDbService.database.transaction(async (transaction) => {
       // find reservation with id and userid and lock
       const reservation =
-        await this.reservationsRepository.findReservationByIdAnUserIdForUpdate(
+        await this.reservationQueries.findByIdAndUserIdForUpdate(
           transaction,
           reservationId,
           userId,
@@ -160,12 +163,11 @@ export class ReservationsService {
         );
 
       // update as cancelled
-      const cancelledReservation =
-        await this.reservationsRepository.cancelReservation(
-          transaction,
-          reservationId,
-          now,
-        );
+      const cancelledReservation = await this.reservationCommands.cancel(
+        transaction,
+        reservationId,
+        now,
+      );
       if (cancelledReservation === null)
         throw new ConflictException('Reservation could not be cancelled.');
 

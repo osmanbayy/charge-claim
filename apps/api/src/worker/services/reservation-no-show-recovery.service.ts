@@ -4,7 +4,7 @@ import {
   OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common';
-import { ReservationsRepository } from '../../modules/reservations/repositories/reservations.repository';
+import { NoShowNotificationRepository } from '../../modules/reservations/repositories/no-show-notification.repository';
 import { ReservationNoShowQueueService } from '../../modules/reservations/queues/reservation-no-show-queue.service';
 
 const RECOVERY_INTERVAL_MS = 60_000;
@@ -19,7 +19,7 @@ export class ReservationNoShowRecoveryService
   private isRecoveryRunning = false;
 
   constructor(
-    private readonly reservationsRepository: ReservationsRepository,
+    private readonly noShowNotifications: NoShowNotificationRepository,
     private readonly noShowQueueService: ReservationNoShowQueueService,
   ) {}
 
@@ -43,7 +43,7 @@ export class ReservationNoShowRecoveryService
 
     try {
       const pendingReservations =
-        await this.reservationsRepository.findReservationsPendingNoShowProcessing(
+        await this.noShowNotifications.findPendingProcessing(
           new Date(),
           RECOVERY_BATCH_SIZE,
         );

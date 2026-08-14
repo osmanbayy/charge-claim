@@ -8,7 +8,7 @@ import {
 } from '../common/queues/charging-session-completion.queue';
 import { PostgresDatabaseService } from '../core/database/postgres/postgres-database.service';
 import { ChargingSessionRepository } from '../modules/charging-sessions/repositories/charging-sessions.repository';
-import { ReservationsRepository } from '../modules/reservations/repositories/reservations.repository';
+import { ReservationCommandRepository } from '../modules/reservations/repositories/reservation-command.repository';
 
 @Processor(CHARGING_SESSION_COMPLETION_QUEUE)
 export class ChargingSessionCompletionProcessor extends WorkerHost {
@@ -17,7 +17,7 @@ export class ChargingSessionCompletionProcessor extends WorkerHost {
   constructor(
     private readonly postgresDbService: PostgresDatabaseService,
     private readonly chargingSessionsRepository: ChargingSessionRepository,
-    private readonly reservationsRepository: ReservationsRepository,
+    private readonly reservationCommands: ReservationCommandRepository,
   ) {
     super();
   }
@@ -64,7 +64,7 @@ export class ChargingSessionCompletionProcessor extends WorkerHost {
 
         if (chargingSession.reservationId !== null) {
           const completedReservation =
-            await this.reservationsRepository.markReservationAsCompleted(
+            await this.reservationCommands.markAsCompleted(
               transaction,
               chargingSession.reservationId,
               chargingSession.plannedEndAt,

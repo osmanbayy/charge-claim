@@ -4,7 +4,9 @@ import { RESERVATION_NO_SHOW_QUEUE } from './common/queues/reservation-no-show.q
 import { AppConfigModule } from './core/config/app-config.module';
 import { PostgresDatabaseModule } from './core/database/postgres/postgres-database.module';
 import { BullMqModule } from './core/queue/bullmq.module';
-import { ReservationsRepository } from './modules/reservations/repositories/reservations.repository';
+import { ReservationQueryRepository } from './modules/reservations/repositories/reservation-query.repository';
+import { ReservationCommandRepository } from './modules/reservations/repositories/reservation-command.repository';
+import { NoShowNotificationRepository } from './modules/reservations/repositories/no-show-notification.repository';
 import { ReservationNoShowProcessor } from './worker/reservation-no-show.processor';
 import { ReservationNoShowQueueService } from './modules/reservations/queues/reservation-no-show-queue.service';
 import { ReservationNoShowRecoveryService } from './worker/services/reservation-no-show-recovery.service';
@@ -30,7 +32,9 @@ import { ChargingSessionCompletionRecoveryService } from './worker/services/char
     }),
   ],
   providers: [
-    ReservationsRepository,
+    ReservationQueryRepository,
+    ReservationCommandRepository,
+    NoShowNotificationRepository,
     ChargingSessionRepository,
     ReservationNoShowProcessor,
     ChargingSessionCompletionProcessor,

@@ -87,6 +87,7 @@ export function StationMap({
 
         {selectedStation ? (
           <Popup
+            className="station-map-popup"
             longitude={selectedStation.longitude}
             latitude={selectedStation.latitude}
             anchor="bottom"

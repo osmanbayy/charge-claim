@@ -1,5 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { DashboardRepository } from './repositories/dashboard.repository';
+import { ConnectorDashboardRepository } from './repositories/connector-dashboard.repository';
+import { ReservationDashboardRepository } from './repositories/reservation-dashboard.repository';
+import { ChargingSessionDashboardRepository } from './repositories/charging-session-dashboard.repository';
 import type {
   DashboardStatisticsFilters,
   StaffDashboardLiveSnapshot,
@@ -11,7 +13,11 @@ const LIVE_LIST_LIMIT = 10;
 
 @Injectable()
 export class DashboardService {
-  constructor(private readonly dashboardRepository: DashboardRepository) {}
+  constructor(
+    private readonly connectorDashboard: ConnectorDashboardRepository,
+    private readonly reservationDashboard: ReservationDashboardRepository,
+    private readonly chargingSessionDashboard: ChargingSessionDashboardRepository,
+  ) {}
 
   async getLiveSnapshot(): Promise<StaffDashboardLiveSnapshot> {
     const currentTime = new Date();
@@ -22,13 +28,10 @@ export class DashboardService {
       activeSessions,
       upcomingReservations,
     ] = await Promise.all([
-      this.dashboardRepository.getConnectorStatusSummary(),
-      this.dashboardRepository.findStationStatusSummaries(),
-      this.dashboardRepository.findActiveSessions(LIVE_LIST_LIMIT),
-      this.dashboardRepository.findUpcomingReservations(
-        currentTime,
-        LIVE_LIST_LIMIT,
-      ),
+      this.connectorDashboard.getStatusSummary(),
+      this.connectorDashboard.findStationStatusSummaries(),
+      this.chargingSessionDashboard.findActive(LIVE_LIST_LIMIT),
+      this.reservationDashboard.findUpcoming(currentTime, LIVE_LIST_LIMIT),
     ]);
 
     return {
@@ -68,8 +71,8 @@ export class DashboardService {
 
     const [reservationStatistics, chargingSessionStatistics] =
       await Promise.all([
-        this.dashboardRepository.getReservationStatistics(filters),
-        this.dashboardRepository.getChargingSessionStatistics(filters),
+        this.reservationDashboard.getStatistics(filters),
+        this.chargingSessionDashboard.getStatistics(filters),
       ]);
 
     return {

@@ -5,7 +5,9 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { PostgresDatabaseService } from '../../core/database/postgres/postgres-database.service';
-import { ReservationsRepository } from '../reservations/repositories/reservations.repository';
+import { ReservationQueryRepository } from '../reservations/repositories/reservation-query.repository';
+import { ReservationCommandRepository } from '../reservations/repositories/reservation-command.repository';
+import { ReservationConflictRepository } from '../reservations/repositories/reservation-conflict.repository';
 import type { StartChargingFromReservationDto } from './dto/start-charging-from-reservation.dto';
 import type { ChargingSessionEntity } from './entities/charging-session.entity';
 import { ChargingSessionRepository } from './repositories/charging-sessions.repository';
@@ -24,7 +26,9 @@ export class ChargingSessionsService {
 
   constructor(
     private readonly postgresDbService: PostgresDatabaseService,
-    private readonly reservationsRepository: ReservationsRepository,
+    private readonly reservationQueries: ReservationQueryRepository,
+    private readonly reservationCommands: ReservationCommandRepository,
+    private readonly reservationConflicts: ReservationConflictRepository,
     private readonly chargingSessionsRepository: ChargingSessionRepository,
     private readonly completionQueueService: ChargingSessionCompletionQueueService,
   ) {}
@@ -37,7 +41,7 @@ export class ChargingSessionsService {
       await this.postgresDbService.database
         .transaction(async (transaction): Promise<ChargingSessionEntity> => {
           const reservation =
-            await this.reservationsRepository.findReservationByIdAnUserIdForUpdate(
+            await this.reservationQueries.findByIdAndUserIdForUpdate(
               transaction,
               input.reservationId,
               userId,
@@ -67,7 +71,7 @@ export class ChargingSessionsService {
             });
 
           const connector =
-            await this.reservationsRepository.findConnectorByIdForUpdate(
+            await this.reservationConflicts.findConnectorByIdForUpdate(
               transaction,
               reservation.connectorId,
             );
@@ -121,7 +125,7 @@ export class ChargingSessionsService {
             );
 
           const updatedReservation =
-            await this.reservationsRepository.markReservationAsInProgress(
+            await this.reservationCommands.markAsInProgress(
               transaction,
               reservation.id,
               userId,
@@ -173,7 +177,7 @@ export class ChargingSessionsService {
           );
 
           const connector =
-            await this.reservationsRepository.findConnectorByIdForUpdate(
+            await this.reservationConflicts.findConnectorByIdForUpdate(
               transaction,
               input.connectorId,
             );
@@ -212,7 +216,7 @@ export class ChargingSessionsService {
             });
 
           const hasOverlappingReservation =
-            await this.reservationsRepository.hasOverlappingReservation(
+            await this.reservationConflicts.hasOverlappingReservation(
               transaction,
               connector.id,
               startedAt,
@@ -310,7 +314,7 @@ export class ChargingSessionsService {
 
       if (chargingSession.reservationId !== null) {
         const completedReservation =
-          await this.reservationsRepository.markReservationAsCompleted(
+          await this.reservationCommands.markAsCompleted(
             transaction,
             chargingSession.reservationId,
             endedAt,
