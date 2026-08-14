@@ -105,7 +105,7 @@ export default function ReservationsPage() {
 
   return (
     <section className="flex-1">
-      <div className="relative isolate overflow-hidden border-b border-white/8 bg-[#0d1820] text-white">
+      <div className="mac-hero relative isolate overflow-hidden border-x-0 border-t-0 text-white">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_80%_10%,oklch(0.65_0.14_166/.18),transparent_24rem)]" />
         <div className="mx-auto w-full max-w-5xl px-4 py-14 sm:px-6">
           <div className="flex items-center gap-2 text-sm text-emerald-200">
@@ -170,7 +170,7 @@ export default function ReservationsPage() {
                 role="tab"
                 aria-selected={activeTab === 'confirmed'}
                 className={`flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${activeTab === 'confirmed'
-                  ? 'bg-emerald-600 text-white shadow-sm'
+                  ? 'bg-primary text-white shadow-sm'
                   : 'text-muted-foreground hover:text-foreground'
                   }`}
                 onClick={() => setActiveTab('confirmed')}

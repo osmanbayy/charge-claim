@@ -30,13 +30,13 @@ export function AppHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/8 bg-[#10101a]/80 backdrop-blur-2xl">
-      <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-50 border-b border-white/8 bg-[#151719]/82 shadow-[0_10px_35px_-25px_black] backdrop-blur-2xl">
+      <div className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link
           href="/stations"
           className="group flex items-center gap-2.5 font-bold tracking-tight text-foreground"
         >
-          <span className="relative flex size-11 items-center justify-center overflow-hidden rounded-2xl bg-[#082b2d] text-emerald-300 shadow-[0_12px_30px_-12px_oklch(0.3_0.1_180/.8)] transition-transform group-hover:-translate-y-0.5">
+          <span className="relative flex size-9 items-center justify-center overflow-hidden rounded-[11px] border border-white/10 bg-[#203234] text-emerald-300 shadow-[inset_0_1px_0_rgb(255_255_255/.08)]">
             <span className="absolute inset-x-1 top-0 h-px bg-linear-to-r from-transparent via-emerald-300/80 to-transparent" />
             <BatteryCharging className="size-5" />
           </span>
@@ -48,7 +48,7 @@ export function AppHeader() {
           </span>
         </Link>
 
-        <nav className="flex items-center gap-1.5 rounded-2xl border border-white/8 bg-white/[.035] p-1.5 shadow-sm backdrop-blur-xl">
+        <nav className="flex items-center gap-1 rounded-[13px] border border-white/8 bg-black/15 p-1 shadow-[inset_0_1px_0_rgb(255_255_255/.035)] backdrop-blur-xl">
           <Link
             href={"/stations"}
             className={buttonVariants({ variant: "ghost" })}
@@ -143,10 +143,7 @@ export function AppHeader() {
 
               <Link
                 href="/register"
-                className={cn(
-                  buttonVariants(),
-                  "bg-emerald-600 hover:bg-emerald-700",
-                )}
+                className={cn(buttonVariants())}
               >
                 <UserPlus data-icon="inline-start" className="size-4" />
                 <span className="hidden sm:inline">Kayıt ol</span>

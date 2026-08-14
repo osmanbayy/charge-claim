@@ -150,7 +150,6 @@ export default function NewStationPage() {
 
                 <Button
                   type="submit"
-                  className="bg-emerald-600 hover:bg-emerald-700"
                   disabled={createStation.isPending}
                 >
                   {createStation.isPending

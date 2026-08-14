@@ -87,7 +87,7 @@ export default function ManageStationPage() {
 
         {stationQuery.data ? (
           <>
-            <section className="relative overflow-hidden rounded-3xl bg-[#071f23] px-6 py-8 text-white shadow-2xl sm:px-9">
+            <section className="mac-hero relative overflow-hidden rounded-[20px] px-6 py-8 text-white sm:px-9">
               <div className="absolute -right-20 -top-28 size-72 rounded-full border border-emerald-300/15" />
               <p className="text-xs font-semibold uppercase tracking-[.2em] text-emerald-300">İstasyon kontrol merkezi</p>
               <h1 className="mt-3 text-3xl font-semibold tracking-[-.04em]">{stationQuery.data.name}</h1>

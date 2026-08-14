@@ -130,7 +130,7 @@ export default function RegisterPage() {
 
             <Button
               type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-700 cursor-pointer"
+              className="w-full cursor-pointer"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Hesap oluşturuluyor..." : "Kayıt ol"}

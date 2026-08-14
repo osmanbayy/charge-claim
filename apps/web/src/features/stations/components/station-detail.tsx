@@ -154,7 +154,7 @@ export function StationDetail({ stationId }: StationDetailProps) {
         İstasyonlara dön
       </Link>
 
-      <section className="relative isolate overflow-hidden rounded-3xl border border-white/8 bg-[#0d1820] p-6 text-white shadow-2xl sm:p-8">
+      <section className="mac-hero relative isolate overflow-hidden rounded-[20px] p-6 text-white sm:p-8">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_85%_20%,oklch(0.66_0.15_166/.2),transparent_22rem)]" />
         <div className="flex items-start gap-4">
           <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-white/10">
@@ -248,7 +248,7 @@ export function StationDetail({ stationId }: StationDetailProps) {
 
                 <Button
                   type="button"
-                  className="col-span-2 bg-emerald-600 hover:bg-emerald-700"
+                  className="col-span-2"
                   disabled={connector.operationalStatus !== "ACTIVE"}
                   onClick={() => openAvailabilityDialog(connector)}
                 >
@@ -307,7 +307,7 @@ export function StationDetail({ stationId }: StationDetailProps) {
               </div>
               <Button
                 type="button"
-                className="mt-4 w-full bg-emerald-600 hover:bg-emerald-700"
+                className="mt-4 w-full"
                 onClick={continueToConfirmation}
               >
                 Rezervasyona devam et

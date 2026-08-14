@@ -68,7 +68,7 @@ export default function StaffPage() {
   return (
     <div className="flex-1 bg-muted/20">
       <div className="mx-auto w-full max-w-7xl space-y-12 px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
-        <section className="relative isolate overflow-hidden rounded-[2rem] bg-[#061f23] px-6 py-12 text-white shadow-[0_32px_80px_-38px_oklch(0.15_0.08_200/.8)] sm:px-10 lg:px-12">
+        <section className="mac-hero relative isolate overflow-hidden rounded-[20px] px-6 py-12 text-white sm:px-10 lg:px-12">
           <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_82%_20%,oklch(0.7_0.16_165/.3),transparent_24rem)]" />
           <div className="absolute inset-0 -z-10 opacity-[.05] bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-size-[64px_64px]" />
           <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
@@ -96,7 +96,7 @@ export default function StaffPage() {
 
             <Link
               href="/staff/stations"
-              className={buttonVariants({ className: 'bg-emerald-300 text-[#062125] hover:bg-emerald-200' })}
+              className={buttonVariants()}
             >
               <MapPinned className="size-4" />
               İstasyonları yönet

@@ -120,11 +120,10 @@ export default function StationsPage() {
 
   return (
     <section className="flex-1">
-      <div className="relative isolate overflow-hidden bg-[#061b1f] text-white">
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_78%_18%,oklch(0.73_0.17_164/.3),transparent_25rem),radial-gradient(circle_at_5%_100%,oklch(0.42_0.08_230/.28),transparent_28rem)]" />
-        <div className="absolute inset-0 -z-10 opacity-[.06] bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-size-[72px_72px]" />
-        <div className="absolute -right-20 top-1/2 -z-10 size-125 -translate-y-1/2 rounded-full border border-white/8" />
-        <div className="absolute right-12 top-1/2 -z-10 size-80 -translate-y-1/2 rounded-full border border-emerald-300/12" />
+      <div className="station-hero relative isolate overflow-hidden border-b border-white/10 text-white shadow-[0_35px_90px_-48px_black]">
+        <div className="absolute right-[9%] top-1/2 -z-10 size-105 -translate-y-1/2 rounded-full border border-white/8 shadow-[inset_0_0_80px_rgb(52_211_153/.035)]" />
+        <div className="absolute right-[15%] top-1/2 -z-10 size-72 -translate-y-1/2 rounded-full border border-emerald-200/12" />
+        <div className="absolute right-[21%] top-1/2 -z-10 size-40 -translate-y-1/2 rounded-full border border-emerald-200/15 bg-emerald-300/[.025] backdrop-blur-sm" />
         <div className="mx-auto grid w-full max-w-7xl gap-12 px-4 py-18 sm:px-6 sm:py-24 lg:grid-cols-[1fr_360px] lg:items-end lg:px-8 lg:py-28">
           <div>
             <p className="inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[.2em] text-emerald-200">

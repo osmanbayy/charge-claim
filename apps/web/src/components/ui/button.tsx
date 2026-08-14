@@ -4,13 +4,13 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 cursor-pointer items-center justify-center rounded-xl border border-transparent bg-clip-padding text-sm font-semibold whitespace-nowrap transition-all duration-200 outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/40 active:not-aria-[haspopup]:scale-[.98] disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 cursor-pointer items-center justify-center rounded-[10px] border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all duration-150 outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/30 active:not-aria-[haspopup]:scale-[.985] disabled:pointer-events-none disabled:opacity-45 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow-[0_10px_32px_-14px_var(--primary)] hover:-translate-y-0.5 hover:bg-primary/90",
+        default: "border-emerald-300/18 bg-[linear-gradient(180deg,oklch(0.61_0.135_166),oklch(0.49_0.115_168))] text-white shadow-[0_8px_20px_-10px_oklch(0.5_0.13_166),inset_0_1px_0_rgb(255_255_255/.2),inset_0_-1px_0_rgb(0_0_0/.18)] hover:border-emerald-200/25 hover:brightness-110",
         outline:
-          "border-border/80 bg-background/60 backdrop-blur-md hover:-translate-y-0.5 hover:border-primary/40 hover:bg-background hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground",
+          "border-white/10 bg-white/[.045] shadow-[inset_0_1px_0_rgb(255_255_255/.04)] backdrop-blur-md hover:border-white/18 hover:bg-white/[.08] hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
         ghost:

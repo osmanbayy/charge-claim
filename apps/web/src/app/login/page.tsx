@@ -88,7 +88,7 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              className="w-full bg-emerald-600 hover:bg-emerald-700"
+              className="w-full"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Giriş yapılıyor..." : "Giriş yap"}

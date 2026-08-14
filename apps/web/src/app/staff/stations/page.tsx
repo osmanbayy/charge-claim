@@ -30,7 +30,7 @@ export default function StaffStationsPage() {
   return (
     <div className="flex-1 bg-muted/20">
       <div className="mx-auto w-full max-w-7xl space-y-8 px-4 py-10 sm:px-6">
-        <section className="relative overflow-hidden rounded-3xl bg-[#071f23] p-7 text-white shadow-2xl sm:flex sm:items-end sm:justify-between sm:p-9">
+        <section className="mac-hero relative overflow-hidden rounded-[20px] p-7 text-white sm:flex sm:items-end sm:justify-between sm:p-9">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[.2em] text-emerald-300">
               Personel yönetimi
@@ -49,7 +49,7 @@ export default function StaffStationsPage() {
             href="/staff/stations/new"
             className={cn(
               buttonVariants(),
-              "mt-6 bg-emerald-300 text-[#062125] hover:bg-emerald-200 sm:mt-0",
+              "mt-6 text-white sm:mt-0",
             )}
           >
             <Plus data-icon="inline-start" className="size-4" />
