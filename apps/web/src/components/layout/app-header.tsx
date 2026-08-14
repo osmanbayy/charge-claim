@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -14,12 +15,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useAuth } from "@/features/auth/providers/auth-provider";
 import { cn } from "@/lib/utils";
+import { ConfirmActionDialog } from "@/components/confirm-action-dialog";
 
 export function AppHeader() {
   const router = useRouter();
   const { user, isLoading, logout } = useAuth();
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
 
   function handleLogout(): void {
+    setIsLogoutDialogOpen(false);
     logout();
     router.push("/stations");
     router.refresh();
@@ -115,7 +119,10 @@ export function AppHeader() {
                 </Badge>
               </div>
 
-              <Button variant="outline" onClick={handleLogout}>
+              <Button
+                variant="outline"
+                onClick={() => setIsLogoutDialogOpen(true)}
+              >
                 <LogOut className="size-4" />
                 <span className="hidden sm:inline">Çıkış yap</span>
               </Button>
@@ -144,6 +151,15 @@ export function AppHeader() {
           )}
         </nav>
       </div>
+
+      <ConfirmActionDialog
+        open={isLogoutDialogOpen}
+        title="Çıkış yapmak istiyor musunuz?"
+        description="Oturumunuz sonlandırılacak. Tekrar işlem yapmak için yeniden giriş yapmanız gerekir."
+        confirmLabel="Çıkış yap"
+        onOpenChange={setIsLogoutDialogOpen}
+        onConfirm={handleLogout}
+      />
     </header>
   );
 }

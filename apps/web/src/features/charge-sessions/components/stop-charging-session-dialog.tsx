@@ -1,16 +1,7 @@
 'use client';
 
-import { AlertTriangle, Square } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { Square } from 'lucide-react';
+import { ConfirmActionDialog } from '@/components/confirm-action-dialog';
 
 interface StopChargingSessionDialogProps {
   open: boolean;
@@ -26,58 +17,16 @@ export function StopChargingSessionDialog({
   onConfirm,
 }: StopChargingSessionDialogProps) {
   return (
-    <Dialog
+    <ConfirmActionDialog
       open={open}
-      onOpenChange={(nextOpen) => {
-        if (!isStopping) {
-          onOpenChange(nextOpen);
-        }
-      }}
-    >
-      <DialogContent>
-        <DialogHeader>
-          <div className="mb-2 flex size-11 items-center justify-center rounded-xl bg-destructive/10 text-destructive">
-            <AlertTriangle className="size-5" />
-          </div>
-
-          <DialogTitle>
-            Şarj oturumunu durdur
-          </DialogTitle>
-
-          <DialogDescription>
-            Şarj oturumu mevcut zamana göre tamamlanacak.
-            Tüketilen enerji ve ücret geçen süre üzerinden
-            hesaplanacaktır.
-          </DialogDescription>
-        </DialogHeader>
-
-        <DialogFooter>
-          <DialogClose
-            render={
-              <Button
-                type="button"
-                variant="outline"
-                disabled={isStopping}
-              />
-            }
-          >
-            Vazgeç
-          </DialogClose>
-
-          <Button
-            type="button"
-            variant="destructive"
-            disabled={isStopping}
-            onClick={onConfirm}
-          >
-            <Square className="size-4" />
-
-            {isStopping
-              ? 'Şarj durduruluyor...'
-              : 'Şarjı durdur'}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      title="Şarj oturumunu durdur"
+      description="Şarj oturumu mevcut zamana göre tamamlanacak. Tüketilen enerji ve ücret geçen süre üzerinden hesaplanacaktır."
+      confirmLabel="Şarjı durdur"
+      pendingLabel="Şarj durduruluyor..."
+      confirmIcon={<Square className="size-4" />}
+      isPending={isStopping}
+      onOpenChange={onOpenChange}
+      onConfirm={onConfirm}
+    />
   );
 }

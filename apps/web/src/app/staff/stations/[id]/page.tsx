@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ConfirmActionDialog } from '@/components/confirm-action-dialog';
 import { useManageStation } from '@/features/stations/hooks/use-manage-station';
 import { useStation } from '@/features/stations/hooks/use-stations';
 import type { ConnectorType } from '@/features/stations/types/station';
@@ -23,6 +24,10 @@ export default function ManageStationPage() {
   const [type, setType] = useState<ConnectorType>('TYPE_2');
   const [powerKw, setPowerKw] = useState('');
   const [pricePerKWh, setPricePerKWh] = useState('');
+  const [maintenanceConnector, setMaintenanceConnector] = useState<{
+    id: number;
+    code: string;
+  } | null>(null);
 
   async function saveStation(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -48,6 +53,20 @@ export default function ManageStationPage() {
       setCode('');
       setPowerKw('');
       setPricePerKWh('');
+    } catch {
+      // Mutation errors are displayed globally by Sonner.
+    }
+  }
+
+  async function confirmMaintenance(): Promise<void> {
+    if (maintenanceConnector === null) return;
+
+    try {
+      await statusMutation.mutateAsync({
+        id: maintenanceConnector.id,
+        status: 'MAINTENANCE',
+      });
+      setMaintenanceConnector(null);
     } catch {
       // Mutation errors are displayed globally by Sonner.
     }
@@ -194,7 +213,20 @@ export default function ManageStationPage() {
                         variant="outline"
                         className="w-full"
                         disabled={statusMutation.isPending || (!inMaintenance && connector.currentStatus !== 'AVAILABLE')}
-                        onClick={() => statusMutation.mutate({ id: connector.id, status: inMaintenance ? 'ACTIVE' : 'MAINTENANCE' })}
+                        onClick={() => {
+                          if (inMaintenance) {
+                            statusMutation.mutate({
+                              id: connector.id,
+                              status: 'ACTIVE',
+                            });
+                            return;
+                          }
+
+                          setMaintenanceConnector({
+                            id: connector.id,
+                            code: connector.code,
+                          });
+                        }}
                       >
                         <Power className="size-4" />
                         {inMaintenance ? 'Aktifleştir' : 'Bakıma al'}
@@ -205,6 +237,19 @@ export default function ManageStationPage() {
             </section>
           </>
         ) : null}
+
+        <ConfirmActionDialog
+          open={maintenanceConnector !== null}
+          title="Konnektörü bakıma almak istiyor musunuz?"
+          description={`${maintenanceConnector?.code ?? 'Seçilen konnektör'} bakımdayken yeni rezervasyon ve şarj işlemleri için kullanılamaz.`}
+          confirmLabel="Bakıma al"
+          pendingLabel="Bakıma alınıyor..."
+          isPending={statusMutation.isPending}
+          onOpenChange={(open) => {
+            if (!open) setMaintenanceConnector(null);
+          }}
+          onConfirm={() => void confirmMaintenance()}
+        />
       </div>
     </div>
   );
