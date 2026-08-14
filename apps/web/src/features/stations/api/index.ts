@@ -1,5 +1,5 @@
 import { apiClient } from "@/lib/api/client";
-import type { Connector, ConnectorOperationalStatus, CreatedStation, CreateConnectorInput, CreateStationInput, Station, UpdateStationInput } from "../types/station";
+import type { Connector, ConnectorOperationalStatus, CreatedStation, CreateConnectorInput, CreateStationInput, Station, UpdateStationInput, PaginatedStations } from "../types/station";
 
 export async function createStation(createStatiionInput: CreateStationInput): Promise<CreatedStation> {
   const response = await apiClient.post<CreatedStation>("/stations", createStatiionInput);
@@ -10,6 +10,20 @@ export async function createStation(createStatiionInput: CreateStationInput): Pr
 export async function getStations(): Promise<Station[]> {
   const response =
     await apiClient.get<Station[]>("/stations");
+
+  return response.data;
+}
+
+export async function getStationPage(page: number, limit: number = 10): Promise<PaginatedStations> {
+  const response = await apiClient.get<PaginatedStations>(
+    '/stations/page',
+    {
+      params: {
+        page,
+        limit,
+      },
+    },
+  );
 
   return response.data;
 }

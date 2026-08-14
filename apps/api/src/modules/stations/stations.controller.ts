@@ -6,6 +6,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import type {
@@ -36,6 +37,8 @@ import {
   StationWithConnectorsResponseDto,
 } from './dto/station-response.dto';
 import { ConnectorResponseDto } from '../connectors/dto/connector-response.dto';
+import type { PaginatedStations } from './entities/paginated-stations.entity';
+import { StationPaginationQueryDto } from './dto/station-pagination-query.dto';
 
 @Controller('stations')
 export class StationsController {
@@ -50,6 +53,22 @@ export class StationsController {
   })
   findAll(): Promise<StationWithConnectors[]> {
     return this.stationsService.findAll();
+  }
+
+  @Get('page')
+  @ApiOperation({
+    summary: 'List stations with pagination',
+  })
+  @ApiOkResponse({
+    description: 'Paginated stations with their connectors.',
+  })
+  @ApiBadRequestResponse({
+    description: 'Pagination query parameters are invalid.',
+  })
+  findPage(
+    @Query() query: StationPaginationQueryDto,
+  ): Promise<PaginatedStations> {
+    return this.stationsService.findPage(query.page, query.limit);
   }
 
   @Get(':id')

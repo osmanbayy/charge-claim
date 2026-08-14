@@ -37,11 +37,15 @@ export function AppHeader() {
           className="group flex items-center gap-2.5 font-bold tracking-tight text-foreground"
         >
           <span className="relative flex size-11 items-center justify-center overflow-hidden rounded-2xl bg-[#082b2d] text-emerald-300 shadow-[0_12px_30px_-12px_oklch(0.3_0.1_180/.8)] transition-transform group-hover:-translate-y-0.5">
-            <span className="absolute inset-x-1 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/80 to-transparent" />
+            <span className="absolute inset-x-1 top-0 h-px bg-linear-to-r from-transparent via-emerald-300/80 to-transparent" />
             <BatteryCharging className="size-5" />
           </span>
 
-          <span className="hidden text-[16px] text-white sm:inline">Charge<span className="text-emerald-300">Claim</span><span className="ml-2 rounded-full border border-emerald-300/15 bg-emerald-300/8 px-2 py-1 text-[9px] font-bold uppercase tracking-[.18em] text-emerald-300">İstanbul</span></span>
+          <span className="hidden text-[16px] text-white sm:inline">
+            Charge
+            <span className="text-emerald-300">Claim</span>
+            <span className="ml-2 rounded-full border border-emerald-300/15 bg-emerald-300/8 px-2 py-1 text-[9px] font-bold uppercase tracking-[.18em] text-emerald-300">İstanbul</span>
+          </span>
         </Link>
 
         <nav className="flex items-center gap-1.5 rounded-2xl border border-white/8 bg-white/[.035] p-1.5 shadow-sm backdrop-blur-xl">

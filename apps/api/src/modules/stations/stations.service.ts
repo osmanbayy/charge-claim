@@ -17,6 +17,7 @@ import type {
 import { CreateStationDto } from './dto/create-station.dto';
 import { UpdateStationDto } from './dto/update-station.dto';
 import { CreateConnectorDto } from '../connectors/dto/create-connector.dto';
+import type { PaginatedStations } from './entities/paginated-stations.entity';
 
 @Injectable()
 export class StationsService {
@@ -28,31 +29,8 @@ export class StationsService {
   async findAll(): Promise<StationWithConnectors[]> {
     // get all stations
     const stations = await this.stationsRepository.findAll();
-    // create a list containing only ids of the stations
-    const stationIds = stations.map((station) => station.id);
 
-    // gel all connectors using the stations ids in the list (stationIds)
-    const connectors =
-      await this.connectorsService.findByStationIds(stationIds);
-
-    const connectorsByStationId = new Map<
-      number,
-      ConnectorWithCurrentStatus[]
-    >();
-
-    for (const connector of connectors) {
-      const stationConnectors =
-        connectorsByStationId.get(connector.stationId) ?? [];
-
-      stationConnectors.push(connector);
-
-      connectorsByStationId.set(connector.stationId, stationConnectors);
-    }
-
-    return stations.map((station) => ({
-      ...station,
-      connectors: connectorsByStationId.get(station.id) ?? [],
-    }));
+    return this.attachConnectors(stations);
   }
 
   async findById(id: number): Promise<StationWithConnectors> {
@@ -118,5 +96,59 @@ export class StationsService {
     if (!station) throw new NotFoundException('Station not found.');
 
     return this.connectorsService.create(stationId, createConnectorDto);
+  }
+
+  async findPage(page: number, limit: number): Promise<PaginatedStations> {
+    const [stations, totalItems] = await Promise.all([
+      this.stationsRepository.findPage(page, limit),
+      this.stationsRepository.count(),
+    ]);
+
+    const items = await this.attachConnectors(stations);
+    const totalPages = Math.ceil(totalItems / limit);
+
+    return {
+      items,
+      meta: {
+        page,
+        limit,
+        totalItems,
+        totalPages,
+        hasPreviousPage: page > 1,
+        hasNextPage: page < totalPages,
+      },
+    };
+  }
+
+  private async attachConnectors(
+    stations: StationEntity[],
+  ): Promise<StationWithConnectors[]> {
+    if (stations.length === 0) return [];
+
+    // create a list containing only ids of the stations
+    const stationIds = stations.map((station) => station.id);
+
+    // gel all connectors using the stations ids in the list (stationIds)
+    const connectors =
+      await this.connectorsService.findByStationIds(stationIds);
+
+    const connectorsByStationId = new Map<
+      number,
+      ConnectorWithCurrentStatus[]
+    >();
+
+    for (const connector of connectors) {
+      const stationConnectors =
+        connectorsByStationId.get(connector.stationId) ?? [];
+
+      stationConnectors.push(connector);
+
+      connectorsByStationId.set(connector.stationId, stationConnectors);
+    }
+
+    return stations.map((station) => ({
+      ...station,
+      connectors: connectorsByStationId.get(station.id) ?? [],
+    }));
   }
 }

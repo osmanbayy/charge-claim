@@ -53,3 +53,17 @@ export interface CreateConnectorInput {
 }
 
 export type CreatedStation = Omit<Station, "connectors">;
+
+export interface StationPaginationMeta {
+  page: number;
+  limit: number;
+  totalItems: number;
+  totalPages: number;
+  hasPreviousPage: boolean;
+  hasNextPage: boolean;
+}
+
+export interface PaginatedStations {
+  items: Station[];
+  meta: StationPaginationMeta;
+}

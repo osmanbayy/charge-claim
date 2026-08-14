@@ -6,7 +6,7 @@ import type {
   UpdateStationEntity,
 } from '../entities/station.entity';
 import { stations } from '../../../core/database/postgres/drizzle/schema';
-import { asc, eq } from 'drizzle-orm';
+import { asc, eq, sql } from 'drizzle-orm';
 
 @Injectable()
 export class StationsRepository {
@@ -53,5 +53,24 @@ export class StationsRepository {
       .returning();
 
     return updatedStation ?? null;
+  }
+
+  findPage(page: number, limit: number): Promise<StationEntity[]> {
+    const offset = (page - 1) * limit;
+
+    return this.postgresDbService.database
+      .select()
+      .from(stations)
+      .orderBy(asc(stations.name), asc(stations.id))
+      .limit(limit)
+      .offset(offset);
+  }
+
+  async count(): Promise<number> {
+    const [result] = await this.postgresDbService.database
+      .select({ count: sql<number>`COUNT(*)::integer` })
+      .from(stations);
+
+    return result.count ?? 0;
   }
 }

@@ -9,7 +9,7 @@ import { AvailableStationCard } from '@/features/availability/components/availab
 import { useAvailability } from '@/features/availability/hooks/use-availability';
 import type { AvailabilityQueryParams, AvailableConnector, AvailableStation } from '@/features/availability/types/availability';
 import { StationCard } from '@/features/stations/components/station-card';
-import { useStations } from '@/features/stations/hooks/use-stations';
+import { useStationPage, useStations } from '@/features/stations/hooks/use-stations';
 import {
   Dialog,
   DialogContent,
@@ -20,8 +20,10 @@ import {
 } from '@/components/ui/dialog';
 import { StationMap } from '@/features/stations/components/station-map';
 import { ReservationConfirmationDialog, type ReservationSelection } from '@/features/reservations/components/reservation-confirm-dialog';
+import { PaginationControls } from '@/features/stations/components/pagination-control';
 
 type StationViewMode = 'list' | 'map';
+const STATION_PAGE_SIZE = 10;
 
 export default function StationsPage() {
   const [availabilityParams, setAvailabilityParams] =
@@ -29,23 +31,38 @@ export default function StationsPage() {
   const [isSearchDialogOpen, setIsSearchDialogOpen] = useState(false);
   const [viewMode, setViewMode] = useState<StationViewMode>('list');
   const [reservationSelection, setReservationSelection] = useState<ReservationSelection | null>(null);
-
-  const stationsQuery = useStations();
-  const availabilityQuery = useAvailability(availabilityParams);
+  const [page, setPage] = useState(1);
 
   const isAvailabilityMode = availabilityParams !== null;
 
+  const paginatedStationsQuery = useStationPage(
+    page,
+    STATION_PAGE_SIZE,
+    !isAvailabilityMode && viewMode === 'list',
+  );
+
+  const mapStationsQuery = useStations(
+    !isAvailabilityMode && viewMode === 'map',
+  );
+
+  const availabilityQuery = useAvailability(availabilityParams);
+
+  const normalStationsQuery =
+    viewMode === 'list'
+      ? paginatedStationsQuery
+      : mapStationsQuery;
+
   const isPending = isAvailabilityMode
     ? availabilityQuery.isPending
-    : stationsQuery.isPending;
+    : normalStationsQuery.isPending;
 
   const isError = isAvailabilityMode
     ? availabilityQuery.isError
-    : stationsQuery.isError;
+    : normalStationsQuery.isError;
 
   const isFetching = isAvailabilityMode
     ? availabilityQuery.isFetching
-    : stationsQuery.isFetching;
+    : normalStationsQuery.isFetching;
 
   function handleAvailabilitySearch(
     params: AvailabilityQueryParams,
@@ -56,17 +73,49 @@ export default function StationsPage() {
 
   const hasVisibleStations = isAvailabilityMode
     ? (availabilityQuery.data?.stations.length ?? 0) > 0
-    : (stationsQuery.data?.length ?? 0) > 0;
+    : (mapStationsQuery.data?.length ?? 0) > 0;
 
   const visibleStations = isAvailabilityMode
     ? (availabilityQuery.data?.stations ?? [])
-    : (stationsQuery.data ?? []);
+    : (mapStationsQuery.data ?? []);
+
+  const totalStationCount =
+    viewMode === 'list'
+      ? paginatedStationsQuery.data?.meta.totalItems
+      : mapStationsQuery.data?.length;
 
   function handleReservationSelection(
     station: AvailableStation,
     connector: AvailableConnector,
   ): void {
     setReservationSelection({ station, connector });
+  }
+
+  function handleStationPageChange(nextPage: number): void {
+    setPage(nextPage);
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const stationsSection =
+          document.getElementById('stations');
+
+        if (!stationsSection) {
+          return;
+        }
+
+        const headerOffset = 96;
+
+        const targetPosition =
+          stationsSection.getBoundingClientRect().top +
+          window.scrollY -
+          headerOffset;
+
+        window.scrollTo({
+          top: targetPosition,
+          behavior: 'smooth',
+        });
+      });
+    });
   }
 
   return (
@@ -78,19 +127,19 @@ export default function StationsPage() {
         <div className="absolute right-12 top-1/2 -z-10 size-80 -translate-y-1/2 rounded-full border border-emerald-300/12" />
         <div className="mx-auto grid w-full max-w-7xl gap-12 px-4 py-18 sm:px-6 sm:py-24 lg:grid-cols-[1fr_360px] lg:items-end lg:px-8 lg:py-28">
           <div>
-          <p className="inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[.2em] text-emerald-200">
-            <span className="mr-2 inline-block size-1.5 animate-pulse rounded-full bg-emerald-300" /> İstanbul şarj ağı
-          </p>
+            <p className="inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[.2em] text-emerald-200">
+              <span className="mr-2 inline-block size-1.5 animate-pulse rounded-full bg-emerald-300" /> İstanbul şarj ağı
+            </p>
 
-          <h1 className="mt-6 max-w-3xl text-5xl font-semibold leading-[.98] tracking-[-.055em] sm:text-7xl">
-            Şehrin enerjisi<br /><span className="bg-linear-to-r from-emerald-300 to-cyan-200 bg-clip-text text-transparent">sana hazır.</span>
-          </h1>
+            <h1 className="mt-6 max-w-3xl text-5xl font-semibold leading-[.98] tracking-[-.055em] sm:text-7xl">
+              Şehrin enerjisi<br /><span className="bg-linear-to-r from-emerald-300 to-cyan-200 bg-clip-text text-transparent">sana hazır.</span>
+            </h1>
 
-          <p className="mt-7 max-w-xl text-base leading-7 text-slate-300 sm:text-lg">
-            Tarih, saat ve konnektör özelliklerini seçerek uygun
-            şarj noktalarını görüntüle.
-          </p>
-          <a href="#stations" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-emerald-200 transition-colors hover:text-white">İstasyonları keşfet <ArrowDown className="size-4" /></a>
+            <p className="mt-7 max-w-xl text-base leading-7 text-slate-300 sm:text-lg">
+              Tarih, saat ve konnektör özelliklerini seçerek uygun
+              şarj noktalarını görüntüle.
+            </p>
+            <a href="#stations" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-emerald-200 transition-colors hover:text-white">İstasyonları keşfet <ArrowDown className="size-4" /></a>
           </div>
           <div className="grid grid-cols-3 gap-2 rounded-3xl border border-white/10 bg-white/6 p-3 shadow-2xl backdrop-blur-xl lg:grid-cols-1">
             {[{ icon: Zap, label: 'Anlık durum', text: 'Canlı bağlantı' }, { icon: Clock3, label: 'Planlı şarj', text: 'Kolay rezervasyon' }, { icon: ShieldCheck, label: 'Güvenli ağ', text: 'Doğrulanmış istasyonlar' }].map(({ icon: Icon, label, text }) => (
@@ -118,8 +167,8 @@ export default function StationsPage() {
                   ? `${availabilityQuery.data.summary.availableStationCount} istasyon ve ${availabilityQuery.data.summary.availableConnectorCount} konnektör uygun.`
                   : null}
 
-                {!isAvailabilityMode && stationsQuery.data
-                  ? `${stationsQuery.data.length} istasyon bulundu.`
+                {!isAvailabilityMode && totalStationCount !== undefined
+                  ? `${totalStationCount} istasyon bulundu.`
                   : null}
 
                 {isPending ? 'İstasyonlar yükleniyor...' : null}
@@ -201,9 +250,9 @@ export default function StationsPage() {
             </div>
           ) : null}
 
-          {viewMode === 'list' && !isAvailabilityMode && stationsQuery.data ? (
+          {viewMode === 'list' && !isAvailabilityMode && paginatedStationsQuery.data ? (
             <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {stationsQuery.data.map((station) => (
+              {paginatedStationsQuery.data.items.map((station) => (
                 <StationCard
                   key={station.id}
                   station={station}
@@ -224,6 +273,39 @@ export default function StationsPage() {
                   onReserve={handleReservationSelection}
                 />
               ))}
+            </div>
+          ) : null}
+
+          {viewMode === 'list' &&
+            !isAvailabilityMode &&
+            paginatedStationsQuery.data ? (
+            <PaginationControls
+              currentPage={page}
+              totalPages={
+                paginatedStationsQuery.data.meta.totalPages
+              }
+              hasPreviousPage={
+                paginatedStationsQuery.data.meta.hasPreviousPage
+              }
+              hasNextPage={
+                paginatedStationsQuery.data.meta.hasNextPage
+              }
+              disabled={paginatedStationsQuery.isFetching}
+              onPageChange={handleStationPageChange}
+            />
+          ) : null}
+
+          {viewMode === 'list' &&
+            !isAvailabilityMode &&
+            paginatedStationsQuery.data?.items.length === 0 ? (
+            <div className="rounded-xl border border-dashed bg-card p-10 text-center">
+              <h2 className="font-semibold">
+                İstasyon bulunamadı
+              </h2>
+
+              <p className="mt-2 text-sm text-muted-foreground">
+                Henüz görüntülenecek bir istasyon bulunmuyor.
+              </p>
             </div>
           ) : null}
 

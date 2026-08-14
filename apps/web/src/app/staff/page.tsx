@@ -181,7 +181,7 @@ export default function StaffPage() {
           ) : null}
         </section>
 
-        <section className="space-y-6 rounded-3xl border border-white/8 bg-white/[.025] p-5 shadow-[0_24px_70px_-45px_black] backdrop-blur-xl sm:p-7">
+        <section className="space-y-6 rounded-3xl border border-white/8 bg-white/2.5 p-5 shadow-[0_24px_70px_-45px_black] backdrop-blur-xl sm:p-7">
           <div>
             <h2 className="text-2xl font-semibold tracking-[-.03em]">
               Tarih aralığı istatistikleri
