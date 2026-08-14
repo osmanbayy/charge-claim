@@ -1,7 +1,6 @@
 'use client';
 
 import { BatteryCharging, CalendarClock } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -19,7 +18,6 @@ interface StartReservationChargingDialogProps {
   reservation: Reservation | null;
   stationName: string;
   isStarting: boolean;
-  errorMessage?: string;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
 }
@@ -28,7 +26,6 @@ export function StartReservationChargingDialog({
   reservation,
   stationName,
   isStarting,
-  errorMessage,
   onOpenChange,
   onConfirm,
 }: StartReservationChargingDialogProps) {
@@ -78,14 +75,6 @@ export function StartReservationChargingDialog({
               Rezervasyon #{reservation.id}
             </p>
           </div>
-        ) : null}
-
-        {errorMessage ? (
-          <Alert variant="destructive">
-            <AlertDescription>
-              {errorMessage}
-            </AlertDescription>
-          </Alert>
         ) : null}
 
         <DialogFooter>

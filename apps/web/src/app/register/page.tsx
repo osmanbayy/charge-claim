@@ -3,8 +3,8 @@
 import { useState, type SubmitEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlertCircle, UserPlus } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { UserPlus } from "lucide-react";
+import { toast } from 'sonner';
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,16 +25,13 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    setErrorMessage(null);
-
     if (password !== passwordConfirmation) {
-      setErrorMessage('Şifreler eşleşmiyot.');
+      toast.error('Şifreler eşleşmiyor', { description: 'Her iki alana da aynı şifreyi girin.' });
       return;
     }
 
@@ -48,7 +45,7 @@ export default function RegisterPage() {
       });
       router.push("/login");
     } catch {
-      setErrorMessage("Kayıt oluşturualamadı. E posta adresi daha önce alınmış olabilir.");
+      toast.error('Kayıt oluşturulamadı', { description: 'E-posta adresi daha önce alınmış olabilir.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -73,13 +70,6 @@ export default function RegisterPage() {
 
         <CardContent>
           <form className="space-y-5" onSubmit={handleSubmit}>
-            {errorMessage && (
-              <Alert variant="destructive">
-                <AlertCircle />
-                <AlertDescription>{errorMessage}</AlertDescription>
-              </Alert>
-            )}
-
             <div className="space-y-2">
               <Label htmlFor="name">Ad soyad</Label>
               <Input

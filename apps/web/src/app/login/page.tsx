@@ -3,8 +3,8 @@
 import { useState, type SubmitEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlertCircle, LogIn } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { LogIn } from "lucide-react";
+import { toast } from 'sonner';
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,13 +23,11 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    setErrorMessage(null);
     setIsSubmitting(true);
 
     try {
@@ -37,7 +35,7 @@ export default function LoginPage() {
       router.push("/stations");
       router.refresh();
     } catch {
-      setErrorMessage('E mail veya şifre hatalı.');
+      toast.error('Giriş yapılamadı', { description: 'E-posta adresi veya şifre hatalı.' });
     } finally {
       setIsSubmitting(false);
     }
@@ -62,13 +60,6 @@ export default function LoginPage() {
 
         <CardContent>
           <form className="space-y-5" onSubmit={handleSubmit}>
-            {errorMessage && (
-              <Alert variant={"destructive"}>
-                <AlertCircle />
-                <AlertDescription>{errorMessage}</AlertDescription>
-              </Alert>
-            )}
-
             <div className="space-y-2">
               <Label htmlFor="email">E mail</Label>
               <Input

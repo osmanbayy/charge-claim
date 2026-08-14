@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import {
   AlertTriangle,
   LoaderCircle,
@@ -16,7 +15,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useCancelReservation } from '../hooks/use-cancel-reservation';
-import { getCancellationErrorMessage } from '../utils';
 import { dateTimeFormatter } from '@/lib/constants';
 import type { Reservation } from '../types/reservation';
 
@@ -35,7 +33,6 @@ export function ReservationCancellationDialog({
   onOpenChange,
 }: ReservationCancellationDialogProps) {
   const cancelReservation = useCancelReservation();
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (selection === null) return null;
 
@@ -47,7 +44,6 @@ export function ReservationCancellationDialog({
     }
 
     if (!open) {
-      setErrorMessage(null);
       cancelReservation.reset();
     }
 
@@ -55,13 +51,11 @@ export function ReservationCancellationDialog({
   }
 
   const handleCancel = async (): Promise<void> => {
-    setErrorMessage(null);
-
     try {
       await cancelReservation.mutateAsync(reservation.id);
       handleOpenChange(false);
-    } catch (error: unknown) {
-      setErrorMessage(getCancellationErrorMessage(error));
+    } catch {
+      // Mutation errors are displayed globally by Sonner.
     }
   }
 
@@ -117,16 +111,6 @@ export function ReservationCancellationDialog({
             Gerekirse yeni bir rezervasyon oluşturmanız gerekir.
           </AlertDescription>
         </Alert>
-
-        {errorMessage ? (
-          <Alert variant="destructive">
-            <AlertTriangle className="size-4" />
-
-            <AlertDescription>
-              {errorMessage}
-            </AlertDescription>
-          </Alert>
-        ) : null}
 
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Button

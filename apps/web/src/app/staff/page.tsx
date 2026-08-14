@@ -9,7 +9,7 @@ import {
   RefreshCw,
   ShieldCheck,
 } from 'lucide-react';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -64,13 +64,6 @@ export default function StaffPage() {
   const stationsQuery = useStations();
 
   const stations = stationsQuery.data ?? [];
-
-  function handleLiveRefetch(): void {
-    void Promise.all([
-      liveQuery.refetch(),
-      stationsQuery.refetch(),
-    ]);
-  }
 
   return (
     <div className="flex-1 bg-muted/20">
@@ -155,27 +148,6 @@ export default function StaffPage() {
             </div>
           ) : null}
 
-          {liveQuery.isError ? (
-            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-8 text-center">
-              <h3 className="font-semibold">
-                Canlı dashboard yüklenemedi
-              </h3>
-
-              <p className="mt-2 text-sm text-muted-foreground">
-                API bağlantısını kontrol edip tekrar deneyin.
-              </p>
-
-              <Button
-                type="button"
-                className="mt-4"
-                onClick={handleLiveRefetch}
-              >
-                <RefreshCw className="size-4" />
-                Tekrar dene
-              </Button>
-            </div>
-          ) : null}
-
           {liveQuery.data ? (
             <div className="space-y-5">
               <ConnectorSummaryCards
@@ -238,33 +210,6 @@ export default function StaffPage() {
                 ),
               )}
             </div>
-          ) : null}
-
-          {statisticsQuery.isError ? (
-            <Card className="border-destructive/30 bg-destructive/5">
-              <CardHeader>
-                <CardTitle>
-                  İstatistikler yüklenemedi
-                </CardTitle>
-
-                <CardDescription>
-                  Tarih aralığını ve API bağlantısını
-                  kontrol edin.
-                </CardDescription>
-              </CardHeader>
-
-              <CardContent>
-                <Button
-                  type="button"
-                  onClick={() => {
-                    void statisticsQuery.refetch();
-                  }}
-                >
-                  <RefreshCw className="size-4" />
-                  Tekrar dene
-                </Button>
-              </CardContent>
-            </Card>
           ) : null}
 
           {statisticsQuery.data ? (

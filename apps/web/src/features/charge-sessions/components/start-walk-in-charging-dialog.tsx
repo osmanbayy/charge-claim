@@ -7,7 +7,6 @@ import {
   PlugZap,
   Zap,
 } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -42,7 +41,6 @@ export interface WalkInChargingSelection {
 interface StartWalkInChargingDialogProps {
   selection: WalkInChargingSelection | null;
   isStarting: boolean;
-  errorMessage?: string;
   onOpenChange: (open: boolean) => void;
   onConfirm: (
     durationMinutes: ReservationDurationMinutes,
@@ -52,7 +50,6 @@ interface StartWalkInChargingDialogProps {
 export function StartWalkInChargingDialog({
   selection,
   isStarting,
-  errorMessage,
   onOpenChange,
   onConfirm,
 }: StartWalkInChargingDialogProps) {
@@ -166,14 +163,6 @@ export function StartWalkInChargingDialog({
             </SelectContent>
           </Select>
         </div>
-
-        {errorMessage ? (
-          <Alert variant="destructive">
-            <AlertDescription>
-              {errorMessage}
-            </AlertDescription>
-          </Alert>
-        ) : null}
 
         <DialogFooter>
           <DialogClose

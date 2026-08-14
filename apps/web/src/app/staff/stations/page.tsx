@@ -2,16 +2,13 @@
 
 import Link from "next/link";
 import {
-  AlertCircle,
   ArrowRight,
   MapPin,
   Plus,
   PlugZap,
-  RefreshCw,
 } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -28,7 +25,6 @@ export default function StaffStationsPage() {
     data: stations,
     isLoading,
     isError,
-    refetch,
   } = useStations();
 
   return (
@@ -78,26 +74,6 @@ export default function StaffStationsPage() {
             ))}
           </section>
         )}
-        {isError && (
-          <Alert variant="destructive">
-            <AlertCircle />
-
-            <AlertDescription className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
-              <span>İstasyonlar yüklenirken bir hata oluştu.</span>
-
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => void refetch()}
-              >
-                <RefreshCw data-icon="inline-start" className="size-4" />
-                Tekrar dene
-              </Button>
-            </AlertDescription>
-          </Alert>
-        )}
-
         {!isLoading && !isError && stations?.length === 0 && (
           <Card>
             <CardContent className="flex flex-col items-center py-12 text-center">

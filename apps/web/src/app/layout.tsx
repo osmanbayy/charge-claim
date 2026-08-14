@@ -5,6 +5,7 @@ import { QueryProvider } from "@/providers/query-provider";
 import { AppHeader } from "@/components/layout/app-header";
 import { AppFooter } from "@/components/layout/app-footer";
 import { AuthProvider } from "@/features/auth/providers/auth-provider";
+import { Toaster } from '@/components/ui/sonner';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,6 +45,7 @@ export default function RootLayout({
             </main>
 
             <AppFooter />
+            <Toaster />
           </AuthProvider>
         </QueryProvider>
       </body>

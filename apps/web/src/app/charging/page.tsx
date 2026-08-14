@@ -4,7 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import {
   BatteryCharging,
   History,
-  RefreshCw,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -14,7 +13,6 @@ import { useAuth } from '@/features/auth/providers/auth-provider';
 import { ActiveChargingSessionCard } from '@/features/charge-sessions/components/active-charging-session-card';
 import { ChargingSessionHistoryCard } from '@/features/charge-sessions/components/charging-session-history-card';
 import { StopChargingSessionDialog } from '@/features/charge-sessions/components/stop-charging-session-dialog';
-import { getChargingErrorMessage } from '@/features/charge-sessions/error-utils';
 import { useActiveChargingSession } from '@/features/charge-sessions/hooks/use-active-charging-session';
 import { chargingSessionKeys, useChargingSessions } from '@/features/charge-sessions/hooks/use-charging-sessions';
 import { useStopChargingSession } from '@/features/charge-sessions/hooks/use-stop-charging-session';
@@ -130,14 +128,6 @@ export default function ChargingPage() {
     });
   }
 
-  function handleChargingRefetch(): void {
-    void Promise.all([
-      activeSessionQuery.refetch(),
-      chargingSessionsQuery.refetch(),
-      stationsQuery.refetch(),
-    ]);
-  }
-
   if (isLoading || !isAuthenticated) {
     return (
       <div className="mx-auto w-full max-w-4xl px-4 py-10 sm:px-6">
@@ -197,27 +187,6 @@ export default function ChargingPage() {
 
           {activeSessionQuery.isPending ? (
             <Skeleton className="h-96 w-full rounded-xl" />
-          ) : null}
-
-          {activeSessionQuery.isError ? (
-            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center">
-              <h3 className="font-semibold">
-                Aktif şarj bilgisi yüklenemedi
-              </h3>
-
-              <p className="mt-2 text-sm text-muted-foreground">
-                API bağlantısını kontrol edip tekrar deneyin.
-              </p>
-
-              <Button
-                type="button"
-                className="mt-4"
-                onClick={handleChargingRefetch}
-              >
-                <RefreshCw className="size-4" />
-                Tekrar dene
-              </Button>
-            </div>
           ) : null}
 
           {!activeSessionQuery.isPending &&
@@ -302,29 +271,6 @@ export default function ChargingPage() {
             </div>
           ) : null}
 
-          {chargingSessionsQuery.isError ? (
-            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center">
-              <h3 className="font-semibold">
-                Şarj geçmişi yüklenemedi
-              </h3>
-
-              <p className="mt-2 text-sm text-muted-foreground">
-                API bağlantısını kontrol edip tekrar deneyin.
-              </p>
-
-              <Button
-                type="button"
-                className="mt-4"
-                onClick={() => {
-                  void chargingSessionsQuery.refetch();
-                }}
-              >
-                <RefreshCw className="size-4" />
-                Tekrar dene
-              </Button>
-            </div>
-          ) : null}
-
           {!chargingSessionsQuery.isPending &&
             !chargingSessionsQuery.isError &&
             completedSessions.length === 0 ? (
@@ -376,14 +322,6 @@ export default function ChargingPage() {
         open={isStopDialogOpen}
         isStopping={
           stopChargingMutation.isPending
-        }
-        errorMessage={
-          stopChargingMutation.isError
-            ? getChargingErrorMessage(
-              stopChargingMutation.error,
-              'Şarj oturumu durdurulamadı. Tekrar deneyin.',
-            )
-            : undefined
         }
         onOpenChange={(open) => {
           setIsStopDialogOpen(open);

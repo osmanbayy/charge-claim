@@ -1,7 +1,6 @@
 'use client';
 
 import { AlertTriangle, Square } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -16,7 +15,6 @@ import {
 interface StopChargingSessionDialogProps {
   open: boolean;
   isStopping: boolean;
-  errorMessage?: string;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
 }
@@ -24,7 +22,6 @@ interface StopChargingSessionDialogProps {
 export function StopChargingSessionDialog({
   open,
   isStopping,
-  errorMessage,
   onOpenChange,
   onConfirm,
 }: StopChargingSessionDialogProps) {
@@ -53,14 +50,6 @@ export function StopChargingSessionDialog({
             hesaplanacaktır.
           </DialogDescription>
         </DialogHeader>
-
-        {errorMessage ? (
-          <Alert variant="destructive">
-            <AlertDescription>
-              {errorMessage}
-            </AlertDescription>
-          </Alert>
-        ) : null}
 
         <DialogFooter>
           <DialogClose

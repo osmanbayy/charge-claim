@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ReservationCard } from "@/features/reservations/components/reservation-card";
 import { Button } from "@/components/ui/button";
-import { CalendarDays, CheckCircle2, RefreshCw, XCircle } from "lucide-react";
+import { CalendarDays, CheckCircle2, XCircle } from "lucide-react";
 import {
   ReservationCancellationDialog,
   type CancellationSelection,
@@ -17,7 +17,6 @@ import {
 import type { Reservation } from '@/features/reservations/types/reservation';
 import { useStartChargingFromReservation } from "@/features/charge-sessions/hooks/use-start-charging-from-reservation";
 import { StartReservationChargingDialog } from "@/features/charge-sessions/components/start-reservation-charging-dialog";
-import { getChargingErrorMessage } from "@/features/charge-sessions/error-utils";
 
 interface StartChargingSelection {
   reservation: Reservation;
@@ -134,26 +133,6 @@ export default function ReservationsPage() {
                 className="h-64 rounded-xl"
               />
             ))}
-          </div>
-        ) : null}
-
-        {reservationsQuery.isError ? (
-          <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center">
-            <h2 className="font-semibold">
-              Rezervasyonlar yüklenemedi
-            </h2>
-
-            <p className="mt-2 text-sm text-muted-foreground">
-              API bağlantısını kontrol edip tekrar deneyin.
-            </p>
-
-            <Button
-              className="mt-4"
-              onClick={() => void reservationsQuery.refetch()}
-            >
-              <RefreshCw className="size-4" />
-              Tekrar dene
-            </Button>
           </div>
         ) : null}
 
@@ -296,14 +275,6 @@ export default function ReservationsPage() {
           startChargingSelection?.stationName ?? ''
         }
         isStarting={startChargingMutation.isPending}
-        errorMessage={
-          startChargingMutation.isError
-            ? getChargingErrorMessage(
-              startChargingMutation.error,
-              'Şarj oturumu başlatılamadı. Lütfen tekrar deneyin.',
-            )
-            : undefined
-        }
         onOpenChange={(open) => {
           if (!open) {
             setStartChargingSelection(null);

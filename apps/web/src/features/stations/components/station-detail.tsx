@@ -45,7 +45,6 @@ import {
 import { useStartWalkInCharging } from '@/features/charge-sessions/hooks/use-start-walk-in-charging';
 import type { ReservationDurationMinutes } from '@/lib/constants';
 import { useRouter } from 'next/navigation';
-import { getChargingErrorMessage } from "@/features/charge-sessions/error-utils";
 
 interface StationDetailProps {
   stationId: number;
@@ -54,20 +53,15 @@ interface StationDetailProps {
 export function StationDetail({ stationId }: StationDetailProps) {
   const router = useRouter();
 
-  const [reservationConnector, setReservationConnector] =
-    useState<Connector | null>(null);
-  const [availabilityParams, setAvailabilityParams] =
-    useState<AvailabilityQueryParams | null>(null);
-  const [reservationSelection, setReservationSelection] =
-    useState<ReservationSelection | null>(null);
-  const [walkInSelection, setWalkInSelection] =
-    useState<WalkInChargingSelection | null>(null);
+  const [reservationConnector, setReservationConnector] = useState<Connector | null>(null);
+  const [availabilityParams, setAvailabilityParams] = useState<AvailabilityQueryParams | null>(null);
+  const [reservationSelection, setReservationSelection] = useState<ReservationSelection | null>(null);
+  const [walkInSelection, setWalkInSelection] = useState<WalkInChargingSelection | null>(null);
 
   const {
     data: station,
     isPending,
     isError,
-    refetch,
   } = useStation(stationId);
   const availabilityQuery = useAvailability(availabilityParams);
 
@@ -147,30 +141,7 @@ export function StationDetail({ stationId }: StationDetailProps) {
   }
 
   if (isError) {
-    return (
-      <div className="mx-auto w-full max-w-5xl px-4 py-12 text-center">
-        <h1 className="text-xl font-semibold">
-          İstasyon yüklenemedi
-        </h1>
-
-        <p className="mt-2 text-sm text-muted-foreground">
-          İstasyon bulunamadı veya API bağlantısı kurulamadı.
-        </p>
-
-        <div className="mt-5 flex justify-center gap-3">
-          <Link
-            href="/stations"
-            className="rounded-lg border px-4 py-2 text-sm font-medium"
-          >
-            Listeye dön
-          </Link>
-
-          <Button onClick={() => void refetch()}>
-            Tekrar dene
-          </Button>
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -262,7 +233,7 @@ export function StationDetail({ stationId }: StationDetailProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  className="col-span-2 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                  className="col-span-2 border-emerald-200 text-emerald-700"
                   disabled={
                     connector.currentStatus !== 'AVAILABLE'
                   }
@@ -313,15 +284,6 @@ export function StationDetail({ stationId }: StationDetailProps) {
             onSearch={setAvailabilityParams}
           />
 
-          {availabilityQuery.isError ? (
-            <Alert variant="destructive">
-              <AlertCircle className="size-4" />
-              <AlertDescription>
-                Müsaitlik kontrol edilemedi. Lütfen tekrar deneyin.
-              </AlertDescription>
-            </Alert>
-          ) : null}
-
           {isSelectedConnectorUnavailable ? (
             <Alert className="border-amber-200 bg-amber-50 text-amber-950">
               <AlertCircle className="size-4" />
@@ -369,14 +331,6 @@ export function StationDetail({ stationId }: StationDetailProps) {
       <StartWalkInChargingDialog
         selection={walkInSelection}
         isStarting={walkInMutation.isPending}
-        errorMessage={
-          walkInMutation.isError
-            ? getChargingErrorMessage(
-              walkInMutation.error,
-              'Anlık şarj başlatılamadı. Lütfen tekrar deneyin.',
-            )
-            : undefined
-        }
         onOpenChange={(open) => {
           if (!open) {
             setWalkInSelection(null);

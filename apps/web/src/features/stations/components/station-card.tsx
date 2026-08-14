@@ -33,7 +33,7 @@ export function StationCard({ station }: StationCardProps) {
       className="group block h-full rounded-3xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <Card className="h-full overflow-hidden rounded-3xl border-white/8 bg-card/90 transition-all duration-300 group-hover:-translate-y-1 group-hover:border-emerald-300/30">
-        <div className="h-1 w-full bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-300 opacity-0 transition-opacity group-hover:opacity-100" />
+        <div className="h-1 w-full bg-linear-to-r from-emerald-400 via-teal-300 to-cyan-300 opacity-0 transition-opacity group-hover:opacity-100" />
         <CardHeader className="space-y-3">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2">

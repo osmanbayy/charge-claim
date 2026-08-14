@@ -54,15 +54,6 @@ export default function StationsPage() {
     setIsSearchDialogOpen(false);
   }
 
-  function handleRefetch(): void {
-    if (isAvailabilityMode) {
-      void availabilityQuery.refetch();
-      return;
-    }
-
-    void stationsQuery.refetch();
-  }
-
   const hasVisibleStations = isAvailabilityMode
     ? (availabilityQuery.data?.stations.length ?? 0) > 0
     : (stationsQuery.data?.length ?? 0) > 0;
@@ -82,7 +73,7 @@ export default function StationsPage() {
     <section className="flex-1">
       <div className="relative isolate overflow-hidden bg-[#061b1f] text-white">
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_78%_18%,oklch(0.73_0.17_164/.3),transparent_25rem),radial-gradient(circle_at_5%_100%,oklch(0.42_0.08_230/.28),transparent_28rem)]" />
-        <div className="absolute inset-0 -z-10 opacity-[.06] [background-image:linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] [background-size:72px_72px]" />
+        <div className="absolute inset-0 -z-10 opacity-[.06] bg-[linear-gradient(to_right,#fff_1px,transparent_1px),linear-gradient(to_bottom,#fff_1px,transparent_1px)] bg-size-[72px_72px]" />
         <div className="absolute -right-20 top-1/2 -z-10 size-125 -translate-y-1/2 rounded-full border border-white/8" />
         <div className="absolute right-12 top-1/2 -z-10 size-80 -translate-y-1/2 rounded-full border border-emerald-300/12" />
         <div className="mx-auto grid w-full max-w-7xl gap-12 px-4 py-18 sm:px-6 sm:py-24 lg:grid-cols-[1fr_360px] lg:items-end lg:px-8 lg:py-28">
@@ -92,7 +83,7 @@ export default function StationsPage() {
           </p>
 
           <h1 className="mt-6 max-w-3xl text-5xl font-semibold leading-[.98] tracking-[-.055em] sm:text-7xl">
-            Şehrin enerjisi<br /><span className="bg-gradient-to-r from-emerald-300 to-cyan-200 bg-clip-text text-transparent">sana hazır.</span>
+            Şehrin enerjisi<br /><span className="bg-linear-to-r from-emerald-300 to-cyan-200 bg-clip-text text-transparent">sana hazır.</span>
           </h1>
 
           <p className="mt-7 max-w-xl text-base leading-7 text-slate-300 sm:text-lg">
@@ -101,7 +92,7 @@ export default function StationsPage() {
           </p>
           <a href="#stations" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-emerald-200 transition-colors hover:text-white">İstasyonları keşfet <ArrowDown className="size-4" /></a>
           </div>
-          <div className="grid grid-cols-3 gap-2 rounded-3xl border border-white/10 bg-white/[.06] p-3 shadow-2xl backdrop-blur-xl lg:grid-cols-1">
+          <div className="grid grid-cols-3 gap-2 rounded-3xl border border-white/10 bg-white/6 p-3 shadow-2xl backdrop-blur-xl lg:grid-cols-1">
             {[{ icon: Zap, label: 'Anlık durum', text: 'Canlı bağlantı' }, { icon: Clock3, label: 'Planlı şarj', text: 'Kolay rezervasyon' }, { icon: ShieldCheck, label: 'Güvenli ağ', text: 'Doğrulanmış istasyonlar' }].map(({ icon: Icon, label, text }) => (
               <div key={label} className="flex flex-col gap-3 rounded-2xl border border-white/8 bg-black/10 p-4 sm:flex-row sm:items-center">
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-300/10 text-emerald-300"><Icon className="size-5" /></span>
@@ -207,26 +198,6 @@ export default function StationsPage() {
                   className="h-80 rounded-xl"
                 />
               ))}
-            </div>
-          ) : null}
-
-          {isError ? (
-            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center">
-              <h2 className="font-semibold">
-                İstasyonlar yüklenemedi
-              </h2>
-
-              <p className="mt-2 text-sm text-muted-foreground">
-                API bağlantısını ve seçtiğiniz değerleri kontrol
-                edip tekrar deneyin.
-              </p>
-
-              <Button
-                className="mt-4"
-                onClick={handleRefetch}
-              >
-                Tekrar dene
-              </Button>
             </div>
           ) : null}
 

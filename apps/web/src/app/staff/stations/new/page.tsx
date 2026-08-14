@@ -3,8 +3,7 @@
 import { useState, type SubmitEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlertCircle, ArrowLeft, MapPinned } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ArrowLeft, MapPinned } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -26,11 +25,9 @@ export default function NewStationPage() {
   const [address, setAddress] = useState("");
   const [latitude, setLatitude] = useState("");
   const [longitude, setLongitude] = useState("");
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   async function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
-    setErrorMessage(null);
 
     try {
       await createStation.mutateAsync({
@@ -43,9 +40,7 @@ export default function NewStationPage() {
 
       router.push("/staff/stations");
     } catch {
-      setErrorMessage(
-        "İstasyon oluşturulamadı. Alanları kontrol edip tekrar deneyin.",
-      );
+      // Mutation errors are displayed globally by Sonner.
     }
   }
 
@@ -76,12 +71,6 @@ export default function NewStationPage() {
 
           <CardContent>
             <form className="space-y-6" onSubmit={handleSubmit}>
-              {errorMessage && (
-                <Alert variant="destructive">
-                  <AlertCircle />
-                  <AlertDescription>{errorMessage}</AlertDescription>
-                </Alert>
-              )}
 
               <div className="space-y-2">
                 <Label htmlFor="name">İstasyon adı</Label>

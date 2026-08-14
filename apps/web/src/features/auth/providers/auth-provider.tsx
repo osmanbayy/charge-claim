@@ -11,6 +11,7 @@ import { AuthUser, LoginInput } from "../types/auth";
 import { getAccessToken, removeAccessToken, setAccessToken } from "@/lib/auth/access-token";
 import { getCurrentUser } from "../api/auth";
 import { login as loginRequest } from "../api/auth"
+import { toast } from 'sonner';
 
 interface AuthContextValue {
   user: AuthUser | null;
@@ -43,6 +44,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       } catch {
         removeAccessToken();
         setUser(null);
+        toast.error('Oturum sona erdi', {
+          description: 'Güvenliğiniz için yeniden giriş yapmanız gerekiyor.',
+          id: 'session-expired',
+        });
       } finally {
         setIsLoading(false);
       }

@@ -8,7 +8,6 @@ import {
   Square,
   Zap,
 } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -33,7 +32,6 @@ interface ActiveChargingSessionCardProps {
   station: Station | null;
   connector: Connector | null;
   isStopping: boolean;
-  errorMessage?: string;
   onStop: () => void;
 }
 
@@ -42,7 +40,6 @@ export function ActiveChargingSessionCard({
   station,
   connector,
   isStopping,
-  errorMessage,
   onStop,
 }: ActiveChargingSessionCardProps) {
   const [currentTime, setCurrentTime] = useState(() => new Date());
@@ -152,14 +149,6 @@ export function ActiveChargingSessionCard({
             )}
           </span>
         </div>
-
-        {errorMessage ? (
-          <Alert variant="destructive">
-            <AlertDescription>
-              {errorMessage}
-            </AlertDescription>
-          </Alert>
-        ) : null}
 
         <Button
           type="button"

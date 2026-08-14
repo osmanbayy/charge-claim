@@ -1,10 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
 import {
-  AlertCircle,
   CalendarDays,
   CircleCheck,
   LoaderCircle,
@@ -13,7 +12,6 @@ import {
   Plug,
   Zap,
 } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -29,10 +27,6 @@ import type {
 import { useAuth } from '@/features/auth/providers/auth-provider';
 import { useCreateReservation } from '../hooks/use-create-reservation';
 import { MILLISECONDS_PER_MINUTE, DURATION_OPTIONS, type ReservationDurationMinutes, dateTimeFormatter } from '@/lib/constants';
-
-interface ApiErrorResponse {
-  message?: string | string[];
-}
 
 export interface ReservationSelection {
   station: AvailableStation;
@@ -58,31 +52,6 @@ function isReservationDurationMinutes(
   );
 }
 
-function getApiErrorMessage(error: unknown): string {
-  if (!axios.isAxiosError<ApiErrorResponse>(error)) {
-    return 'Rezervasyon oluşturulamadı. Tekrar deneyin.';
-  }
-
-  const responseMessage = error.response?.data.message;
-
-  const message = Array.isArray(responseMessage)
-    ? responseMessage.join(' ')
-    : responseMessage;
-
-  if (error.response?.status === 409) {
-    return (
-      message ??
-      'Bu konnektör seçilen zaman aralığında artık müsait değil.'
-    );
-  }
-
-  if (error.response?.status === 401) {
-    return 'Rezervasyon oluşturmak için giriş yapmalısınız.';
-  }
-
-  return message ?? 'Rezervasyon oluşturulamadı. Tekrar deneyin.';
-}
-
 export function ReservationConfirmationDialog({
   selection,
   range,
@@ -91,9 +60,6 @@ export function ReservationConfirmationDialog({
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuth();
   const createReservation = useCreateReservation();
-
-  const [errorMessage, setErrorMessage] =
-    useState<string | null>(null);
 
   const [createdReservationId, setCreatedReservationId] =
     useState<number | null>(null);
@@ -108,7 +74,6 @@ export function ReservationConfirmationDialog({
 
   function handleDialogOpenChange(open: boolean): void {
     if (!open) {
-      setErrorMessage(null);
       setCreatedReservationId(null);
       createReservation.reset();
     }
@@ -117,8 +82,6 @@ export function ReservationConfirmationDialog({
   }
 
   async function handleConfirm(): Promise<void> {
-    setErrorMessage(null);
-
     if (!isAuthenticated) {
       router.push('/login');
       return;
@@ -130,9 +93,9 @@ export function ReservationConfirmationDialog({
       MILLISECONDS_PER_MINUTE;
 
     if (!isReservationDurationMinutes(durationMinutes)) {
-      setErrorMessage(
-        'Seçilen rezervasyon süresi geçerli değil.',
-      );
+      toast.error('Geçersiz rezervasyon süresi', {
+        description: 'Lütfen sunulan süre seçeneklerinden birini seçin.',
+      });
       return;
     }
 
@@ -145,8 +108,8 @@ export function ReservationConfirmationDialog({
         });
 
       setCreatedReservationId(reservation.id);
-    } catch (error: unknown) {
-      setErrorMessage(getApiErrorMessage(error));
+    } catch {
+      // Mutation errors are displayed globally by Sonner.
     }
   }
 
@@ -259,16 +222,6 @@ export function ReservationConfirmationDialog({
               </p>
             </div>
           </div>
-
-          {errorMessage ? (
-            <Alert variant="destructive">
-              <AlertCircle className="size-4" />
-
-              <AlertDescription>
-                {errorMessage}
-              </AlertDescription>
-            </Alert>
-          ) : null}
 
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <Button

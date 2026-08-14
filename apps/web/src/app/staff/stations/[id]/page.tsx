@@ -2,9 +2,8 @@
 
 import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { AlertCircle, ArrowLeft, MapPin, Plus, Power, Save, Zap } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { notFound, useParams } from 'next/navigation';
+import { ArrowLeft, MapPin, Plus, Power, Save, Zap } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,7 +41,7 @@ export default function ManageStationPage() {
   }
 
   if (!Number.isInteger(stationId) || stationId < 1) {
-    return <div className="mx-auto w-full max-w-4xl px-4 py-12"><Alert variant="destructive"><AlertCircle /><AlertDescription>Geçersiz istasyon adresi.</AlertDescription></Alert></div>;
+    notFound();
   }
 
   return (
@@ -50,7 +49,6 @@ export default function ManageStationPage() {
       <div className="mx-auto w-full max-w-6xl space-y-7 px-4 py-10 sm:px-6 lg:px-8">
         <Link href="/staff/stations" className={buttonVariants({ variant: 'ghost' })}><ArrowLeft className="size-4" /> İstasyonlara dön</Link>
         {stationQuery.isPending ? <Skeleton className="h-96 rounded-3xl" /> : null}
-        {stationQuery.isError ? <Alert variant="destructive"><AlertCircle /><AlertDescription>İstasyon yüklenemedi veya bulunamadı.</AlertDescription></Alert> : null}
         {stationQuery.data ? (
           <>
             <section className="relative overflow-hidden rounded-3xl bg-[#071f23] px-6 py-8 text-white shadow-2xl sm:px-9">
@@ -67,7 +65,6 @@ export default function ManageStationPage() {
                   <div className="space-y-2"><Label htmlFor="name">İstasyon adı</Label><Input id="name" name="name" defaultValue={stationQuery.data.name} required /></div>
                   <div className="space-y-2"><Label htmlFor="district">İlçe</Label><Input id="district" name="district" defaultValue={stationQuery.data.district} required /></div>
                   <div className="space-y-2"><Label htmlFor="address">Adres</Label><Input id="address" name="address" defaultValue={stationQuery.data.address} required /></div>
-                  {stationMutation.isError ? <p className="text-sm text-destructive">Bilgiler güncellenemedi.</p> : null}
                   <Button disabled={stationMutation.isPending}><Save className="size-4" />{stationMutation.isPending ? 'Kaydediliyor...' : 'Değişiklikleri kaydet'}</Button>
                 </form></CardContent>
               </Card>
@@ -79,7 +76,6 @@ export default function ManageStationPage() {
                   <div className="space-y-2"><Label htmlFor="type">Tip</Label><select id="type" className="h-9 w-full rounded-md border bg-transparent px-3 text-sm" value={type} onChange={(e) => setType(e.target.value as ConnectorType)}><option value="TYPE_2">Type 2</option><option value="CCS2">CCS2</option></select></div>
                   <div className="space-y-2"><Label htmlFor="power">Güç (kW)</Label><Input id="power" inputMode="decimal" value={powerKw} onChange={(e) => setPowerKw(e.target.value)} placeholder="22.00" required /></div>
                   <div className="space-y-2"><Label htmlFor="price">Fiyat (₺/kWh)</Label><Input id="price" inputMode="decimal" value={pricePerKWh} onChange={(e) => setPricePerKWh(e.target.value)} placeholder="8.50" required /></div>
-                  {connectorMutation.isError ? <p className="text-sm text-destructive sm:col-span-2">Konnektör eklenemedi. Kod ve değerleri kontrol edin.</p> : null}
                   <Button className="sm:col-span-2" disabled={connectorMutation.isPending}><Plus className="size-4" />{connectorMutation.isPending ? 'Ekleniyor...' : 'Konnektör ekle'}</Button>
                 </form></CardContent>
               </Card>
