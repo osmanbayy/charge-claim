@@ -123,7 +123,7 @@ export default function StationsPage() {
       <div className="station-hero relative isolate overflow-hidden border-b border-white/10 text-white shadow-[0_35px_90px_-48px_black]">
         <div className="absolute right-[9%] top-1/2 -z-10 size-105 -translate-y-1/2 rounded-full border border-white/8 shadow-[inset_0_0_80px_rgb(52_211_153/.035)]" />
         <div className="absolute right-[15%] top-1/2 -z-10 size-72 -translate-y-1/2 rounded-full border border-emerald-200/12" />
-        <div className="absolute right-[21%] top-1/2 -z-10 size-40 -translate-y-1/2 rounded-full border border-emerald-200/15 bg-emerald-300/[.025] backdrop-blur-sm" />
+        <div className="absolute right-[21%] top-1/2 -z-10 size-40 -translate-y-1/2 rounded-full border border-emerald-200/15 bg-emerald-300/2.5 backdrop-blur-sm" />
         <div className="mx-auto grid w-full max-w-7xl gap-12 px-4 py-18 sm:px-6 sm:py-24 lg:grid-cols-[1fr_360px] lg:items-end lg:px-8 lg:py-28">
           <div>
             <p className="inline-flex items-center rounded-full border border-primary/25 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[.2em] text-emerald-200">
@@ -141,12 +141,38 @@ export default function StationsPage() {
             <a href="#stations" className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-emerald-200 transition-colors hover:text-white">İstasyonları keşfet <ArrowDown className="size-4" /></a>
           </div>
           <div className="grid grid-cols-3 gap-2 rounded-3xl border border-white/10 bg-white/6 p-3 shadow-2xl backdrop-blur-xl lg:grid-cols-1">
-            {[{ icon: Zap, label: 'Anlık durum', text: 'Canlı bağlantı' }, { icon: Clock3, label: 'Planlı şarj', text: 'Kolay rezervasyon' }, { icon: ShieldCheck, label: 'Güvenli ağ', text: 'Doğrulanmış istasyonlar' }].map(({ icon: Icon, label, text }) => (
-              <div key={label} className="flex flex-col gap-3 rounded-2xl border border-white/8 bg-black/10 p-4 sm:flex-row sm:items-center">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-300/10 text-emerald-300"><Icon className="size-5" /></span>
-                <div><p className="text-sm font-semibold">{label}</p><p className="mt-0.5 text-xs text-slate-400">{text}</p></div>
-              </div>
-            ))}
+            {
+              [
+                {
+                  icon: Zap,
+                  label: 'Anlık durum',
+                  text: 'Canlı bağlantı'
+                },
+                {
+                  icon: Clock3,
+                  label: 'Planlı şarj',
+                  text: 'Kolay rezervasyon'
+                },
+                {
+                  icon: ShieldCheck,
+                  label: 'Güvenli ağ',
+                  text: 'Doğrulanmış istasyonlar'
+                }
+              ].map(({ icon: Icon, label, text }) => (
+                <div
+                  key={label}
+                  className="flex flex-col gap-3 rounded-2xl border border-white/8 bg-black/10 p-4 sm:flex-row sm:items-center"
+                >
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-300/10 text-emerald-300">
+                    <Icon className="size-5" />
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold">{label}</p>
+                    <p className="mt-0.5 text-xs text-slate-400">{text}</p>
+                  </div>
+                </div>
+              ))
+            }
           </div>
         </div>
       </div>

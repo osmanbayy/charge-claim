@@ -6,9 +6,9 @@ Frontend ve backend aynı repository içinde pnpm workspace ile yönetilir. Prod
 
 ## Canlı Demo
 
-- Frontend: https://app.34-185-230-211.sslip.io
-- Backend health: https://api.34-141-50-97.sslip.io/api/health
-- API base URL: https://api.34-141-50-97.sslip.io/api
+- Frontend: https://chargeclaim.duckdns.org
+- Backend health: https://chargeclaim-api.duckdns.org/api/health
+- API base URL: https://chargeclaim-api.duckdns.org/api
 
 > Bu proje portföy ve demo amaçlıdır. Google Cloud deneme kaynakları durdurulduğunda canlı bağlantılar geçici olarak erişilemez olabilir.
 
