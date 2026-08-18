@@ -58,33 +58,30 @@ Frontend ve backend aynı repository içinde pnpm workspace ile yönetilir. Prod
 ### Altyapı
 
 - pnpm workspace monorepo
-- Docker ve Docker Compose
-- Nginx reverse proxy
-- Let's Encrypt
-- Google Cloud Compute Engine
-- systemd
+- Docker
+- Vercel Hobby — Next.js frontend
+- Render Free Web Service — NestJS API ve BullMQ worker
+- Neon Free — PostgreSQL
+- Redis Cloud Free — Redis ve BullMQ
+- Otomatik HTTPS
+- GitHub tabanlı otomatik deployment
 
 ## Production Mimarisi
 
 ```text
-İnternet
+Kullanıcı
    |
-   +-- HTTPS --> Frontend VM
+   +-- HTTPS --> Vercel
    |              |
-   |              +-- Nginx :443
-   |                    |
-   |                    +-- Next.js :3000
+   |              +-- Next.js frontend
    |
-   +-- HTTPS --> Backend VM
+   +-- HTTPS --> Render
                   |
-                  +-- Nginx :443
+                  +-- NestJS API
+                  +-- BullMQ worker
                         |
-                        +-- NestJS API :3001
-                              |
-                              +-- PostgreSQL
-                              +-- Redis
-                              +-- BullMQ Worker
-```
+                        +-- Neon PostgreSQL
+                        +-- Redis Cloud
 
 Frontend ve backend farklı VM'lerde çalışır. PostgreSQL, Redis, NestJS ve Next.js portları doğrudan internete açılmaz. Dış trafik yalnızca Nginx üzerinden `80` ve `443` portlarından alınır.
 
