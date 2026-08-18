@@ -8,18 +8,11 @@ import { ReservationCommandRepository } from './repositories/reservation-command
 import { ReservationConflictRepository } from './repositories/reservation-conflict.repository';
 import { NoShowNotificationRepository } from './repositories/no-show-notification.repository';
 import { ReservationsService } from './reservations.service';
-import { BullModule } from '@nestjs/bullmq';
-import { RESERVATION_NO_SHOW_QUEUE } from '../../common/queues/reservation-no-show.queue';
 import { ReservationNoShowQueueService } from './queues/reservation-no-show-queue.service';
+import { BullMqModule } from '../../core/queue/bullmq.module';
 
 @Module({
-  imports: [
-    AppConfigModule,
-    PostgresDatabaseModule,
-    AuthModule,
-
-    BullModule.registerQueue({ name: RESERVATION_NO_SHOW_QUEUE }),
-  ],
+  imports: [AppConfigModule, PostgresDatabaseModule, AuthModule, BullMqModule],
   controllers: [ReservationsController],
   providers: [
     ReservationQueryRepository,
@@ -33,6 +26,8 @@ import { ReservationNoShowQueueService } from './queues/reservation-no-show-queu
     ReservationQueryRepository,
     ReservationCommandRepository,
     ReservationConflictRepository,
+    NoShowNotificationRepository,
+    ReservationNoShowQueueService,
   ],
 })
 export class ReservationsModule {}

@@ -88,7 +88,7 @@ export class ConnectorsRepository {
     transaction: PostgresTransaction,
     id: number,
   ): Promise<ConnectorEntity | null> {
-    const [connector] = await this.postgresDbService.database
+    const [connector] = await transaction
       .select()
       .from(connectors)
       .where(eq(connectors.id, id))

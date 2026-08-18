@@ -1,18 +1,11 @@
-import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
-import { RESERVATION_NO_SHOW_QUEUE } from '../../common/queues/reservation-no-show.queue';
 import { PostgresDatabaseModule } from '../../core/database/postgres/postgres-database.module';
 import { HealthController } from './health.controller';
 import { HealthService } from './health.service';
+import { BullMqModule } from '../../core/queue/bullmq.module';
 
 @Module({
-  imports: [
-    PostgresDatabaseModule,
-
-    BullModule.registerQueue({
-      name: RESERVATION_NO_SHOW_QUEUE,
-    }),
-  ],
+  imports: [PostgresDatabaseModule, BullMqModule],
   controllers: [HealthController],
   providers: [HealthService],
 })

@@ -14,6 +14,11 @@ import { CreateConnectorDto } from './dto/create-connector.dto';
 import { UpdateConnectorDto } from './dto/update-connector.dto';
 import { PostgresDatabaseService } from '../../core/database/postgres/postgres-database.service';
 import { UpdateConnectorOperationalStatusDto } from './dto/update-connector-operational-status.dto';
+import {
+  getPostgresErrorConstraint,
+  hasPostgresErrorCode,
+  POSTGRES_UNIQUE_VIOLATION_CODE,
+} from '../../core/database/postgres/postgres-error.util';
 
 @Injectable()
 export class ConnectorsService {
@@ -48,20 +53,24 @@ export class ConnectorsService {
     const existingConnector =
       await this.connectorsRepository.findByStationIdAndCode(
         stationId,
-        createConnectorDto.code,
+        normalCode,
       );
     if (existingConnector)
       throw new ConflictException(
         'Connector code already exist for this station',
       );
 
-    return this.connectorsRepository.create({
-      stationId,
-      code: normalCode,
-      type: createConnectorDto.type,
-      powerKw: createConnectorDto.powerKw,
-      pricePerKWh: createConnectorDto.pricePerKWh,
-    });
+    try {
+      return await this.connectorsRepository.create({
+        stationId,
+        code: normalCode,
+        type: createConnectorDto.type,
+        powerKw: createConnectorDto.powerKw,
+        pricePerKWh: createConnectorDto.pricePerKWh,
+      });
+    } catch (error: unknown) {
+      return this.handleConnectorWriteError(error);
+    }
   }
 
   async update(
@@ -106,10 +115,14 @@ export class ConnectorsService {
         'At least one connector field must be provided.',
       );
 
-    const updatedConnector = await this.connectorsRepository.update(
-      id,
-      changes,
-    );
+    let updatedConnector: ConnectorEntity | null;
+
+    try {
+      updatedConnector = await this.connectorsRepository.update(id, changes);
+    } catch (error: unknown) {
+      return this.handleConnectorWriteError(error);
+    }
+
     if (updatedConnector === null)
       throw new NotFoundException('Connector nor found.');
 
@@ -169,5 +182,18 @@ export class ConnectorsService {
 
       return updatedConnector;
     });
+  }
+
+  private handleConnectorWriteError(error: unknown): never {
+    const isConnectorCodeConflict =
+      hasPostgresErrorCode(error, POSTGRES_UNIQUE_VIOLATION_CODE) &&
+      getPostgresErrorConstraint(error) === 'connectors_station_id_code_unique';
+
+    if (isConnectorCodeConflict)
+      throw new ConflictException(
+        'Connector code already exists for this station.',
+      );
+
+    throw error;
   }
 }

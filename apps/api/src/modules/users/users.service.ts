@@ -1,6 +1,11 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { UsersRepository } from './repositories/users.repository';
 import type { UserEntity } from './entities/user.entity';
+import {
+  getPostgresErrorConstraint,
+  hasPostgresErrorCode,
+  POSTGRES_UNIQUE_VIOLATION_CODE,
+} from '../../core/database/postgres/postgres-error.util';
 
 interface CreateDriverData {
   name: string;
@@ -28,11 +33,26 @@ export class UsersService {
     if (existingDriver)
       throw new ConflictException('Email is already registered.');
 
-    return this.usersRepository.create({
-      name: data.name,
-      email: normalEmail,
-      passwordHash: data.passwordHash,
-      role: 'DRIVER',
-    });
+    try {
+      return await this.usersRepository.create({
+        name: data.name,
+        email: normalEmail,
+        passwordHash: data.passwordHash,
+        role: 'DRIVER',
+      });
+    } catch (error: unknown) {
+      return this.handleUserWriteError(error);
+    }
+  }
+
+  private handleUserWriteError(error: unknown): never {
+    const isEmailConflict =
+      hasPostgresErrorCode(error, POSTGRES_UNIQUE_VIOLATION_CODE) &&
+      getPostgresErrorConstraint(error) === 'users_email_unique';
+
+    if (isEmailConflict)
+      throw new ConflictException('Email is already registered.');
+
+    throw error;
   }
 }
