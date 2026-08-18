@@ -12,6 +12,7 @@ import { BullMqModule } from './core/queue/bullmq.module';
 import { ChargingSessionsModule } from './modules/charging-sessions/charging-session.module';
 import { DashboardModule } from './modules/dashboard/dashboard.module';
 import { HealthModule } from './modules/health/health.module';
+import { WorkerModule } from './worker.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { HealthModule } from './modules/health/health.module';
     ChargingSessionsModule,
     DashboardModule,
     HealthModule,
+    WorkerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
