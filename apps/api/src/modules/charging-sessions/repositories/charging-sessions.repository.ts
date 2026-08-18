@@ -93,37 +93,37 @@ export class ChargingSessionRepository {
   ): Promise<ChargingSessionEntity | null> {
     const endedAtIso = endedAt.toISOString();
     const elapsedHoursExpression = sql`
-    (
-      GREATEST(
-        EXTRACT(
-          EPOCH FROM (
-            ${endedAtIso}::timestamptz - ${chargingSessions.startedAt}
-          )
-        ),
-        0
-      ) / 3600
-    )
-  `;
+      (
+        GREATEST(
+          EXTRACT(
+            EPOCH FROM (
+              ${endedAtIso}::timestamptz - ${chargingSessions.startedAt}
+            )
+          ),
+          0
+        ) / 3600
+      )
+    `;
 
     const energyKWhExpression = sql<string>`
-    ROUND(
-      (
-        ${chargingSessions.powerKwSnapshot}
-        * ${elapsedHoursExpression}
-      )::numeric,
-      3
-    )
-  `;
+      ROUND(
+        (
+          ${chargingSessions.powerKwSnapshot}
+          * ${elapsedHoursExpression}
+        )::numeric,
+        3
+      )
+    `;
 
     const totalAmountExpression = sql<string>`
-    ROUND(
-      (
-        ${energyKWhExpression}
-        * ${chargingSessions.pricePerKWhSnapshot}
-      )::numeric,
-      2
-    )
-  `;
+      ROUND(
+        (
+          ${energyKWhExpression}
+          * ${chargingSessions.pricePerKWhSnapshot}
+        )::numeric,
+        2
+      )
+    `;
 
     const [completedSession] = await transaction
       .update(chargingSessions)

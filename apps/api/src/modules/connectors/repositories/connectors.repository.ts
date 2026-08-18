@@ -128,9 +128,7 @@ export class ConnectorsRepository {
     now: Date,
   ): Promise<boolean> {
     const [reservation] = await transaction
-      .select({
-        id: reservations.id,
-      })
+      .select({ id: reservations.id })
       .from(reservations)
       .where(
         and(

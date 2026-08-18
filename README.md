@@ -6,11 +6,12 @@ Frontend ve backend aynı repository içinde pnpm workspace ile yönetilir. Prod
 
 ## Canlı Demo
 
-- Frontend: https://chargeclaim.duckdns.org
-- Backend health: https://chargeclaim-api.duckdns.org/api/health
-- API base URL: https://chargeclaim-api.duckdns.org/api
+- Frontend: https://charge-claim-web.vercel.app
+- Backend health: https://charge-claim-api.onrender.com/api/health
+- API base URL: https://charge-claim-api.onrender.com/api
+- Swagger: https://charge-claim-api.onrender.com/api/docs
 
-> Bu proje portföy ve demo amaçlıdır. Google Cloud deneme kaynakları durdurulduğunda canlı bağlantılar geçici olarak erişilemez olabilir.
+> Frontend Vercel Hobby, backend Render Free, PostgreSQL Neon Free ve Redis Redis Cloud Free üzerinde çalışır. Render Free servisi kullanılmadığında uykuya geçebildiği için ilk API isteğinin yanıt vermesi yaklaşık 30-60 saniye sürebilir.
 
 ## Temel Özellikler
 
