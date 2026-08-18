@@ -2,7 +2,7 @@
 
 Charge Claim, elektrikli araç kullanıcılarının şarj istasyonlarını görüntülemesini, uygun zaman aralıklarını kontrol etmesini, rezervasyon oluşturmasını ve şarj oturumlarını yönetmesini sağlayan full-stack bir uygulamadır.
 
-Frontend ve backend aynı repository içinde pnpm workspace ile yönetilir. Production ortamında ise frontend ve backend birbirinden bağımsız iki Google Cloud VM üzerinde çalışır.
+Frontend ve backend aynı repository içinde pnpm workspace ile yönetilir. Production ortamında Next.js frontend Vercel üzerinde, NestJS API ve BullMQ worker Render üzerinde çalışır. Kalıcı veriler Neon PostgreSQL'de, kuyruk işlemleri ise Redis Cloud'da tutulur.
 
 ## Canlı Demo
 
@@ -173,96 +173,19 @@ Gerçek production dosyaları ilgili sunucularda `.env.backend` ve `.env.fronten
 
 ## Production Deployment
 
-### Backend VM
+Production deployment GitHub üzerindeki `main` branch’i üzerinden otomatik olarak gerçekleştirilir.
 
-Backend VM; PostgreSQL, Redis, migration, NestJS API, BullMQ worker ve Nginx servislerini çalıştırır.
+### Backend — Render
 
-İlk kurulum veya güncelleme:
+Render, repository kökündeki `apps/api/Dockerfile` dosyasını kullanır.
 
-```bash
-cd /opt/charge-claim
-git pull origin main
+Temel Render ayarları:
 
-docker compose \
-  --env-file .env.backend \
-  -f compose.backend.yml \
-  up -d --build
-```
-
-Servis durumlarını kontrol etmek için:
-
-```bash
-docker compose \
-  --env-file .env.backend \
-  -f compose.backend.yml \
-  ps -a
-```
-
-Production başlangıç verilerini manuel eklemek için:
-
-```bash
-docker compose \
-  --env-file .env.backend \
-  -f compose.backend.yml \
-  --profile tools \
-  run --rm seed
-```
-
-Production seed işlemi kullanıcı oluşturmaz; yalnızca istasyon ve connector verilerini idempotent biçimde ekler.
-
-### Frontend VM
-
-Frontend VM, Next.js ve Nginx servislerini çalıştırır.
-
-İlk kurulum veya güncelleme:
-
-```bash
-cd /opt/charge-claim
-git pull origin main
-
-docker compose \
-  --env-file .env.frontend \
-  -f compose.frontend.yml \
-  up -d --build
-```
-
-`NEXT_PUBLIC_API_URL` build sırasında frontend paketine yazılır. API adresi değiştirildiğinde frontend imajı yeniden oluşturulmalıdır.
-
-## Bakım ve Kontrol
-
-Backend logları:
-
-```bash
-docker compose \
-  --env-file .env.backend \
-  -f compose.backend.yml \
-  logs api worker nginx --tail 100
-```
-
-Frontend logları:
-
-```bash
-docker compose \
-  --env-file .env.frontend \
-  -f compose.frontend.yml \
-  logs web nginx --tail 100
-```
-
-Sertifikalar Certbot systemd timer ile otomatik yenilenir:
-
-```bash
-systemctl status certbot.timer
-sudo certbot renew --dry-run
-```
-
-Backend PostgreSQL yedekleri her gece systemd timer tarafından oluşturulur:
-
-```bash
-systemctl list-timers charge-claim-backup.timer --no-pager
-ls -lh /opt/charge-claim-backups/postgres
-```
-
-> Günlük yedek alma doğrulanmıştır. Yedekten geri yükleme prosedürü bu demo kapsamında test edilmemiştir.
+```text
+Service type: Web Service
+Runtime: Docker
+Dockerfile: ./apps/api/Dockerfile
+Health check: /api/health
 
 ## Kalite Kontrolleri
 
@@ -275,17 +198,21 @@ pnpm --filter web build
 
 ## Güvenlik Notları
 
-- PostgreSQL, Redis, API ve Next.js portları doğrudan internete açılmaz.
-- Dış trafik Nginx üzerinden HTTPS ile alınır.
-- Production sırları Git tarafından izlenmez.
-- Demo kullanıcıları production seed işlemine dahil edilmez.
-- Migration API başlamadan önce tamamlanır.
-- Veritabanı ve Redis kalıcı Docker volume'larında tutulur.
-- Uygulama portları ve servis parolaları public repository içinde paylaşılmaz.
+- Production sırları repository içerisinde tutulmaz.
+- Vercel ve Render environment değişkenleri platformların secret yönetimi üzerinden saklanır.
+- PostgreSQL bağlantısı Neon tarafından sağlanan SSL bağlantısını kullanır.
+- Redis bağlantı bilgileri yalnızca Render environment değişkenlerinde tutulur.
+- Backend CORS politikası yalnızca production Vercel adresine izin verir.
+- JWT anahtarı en az 32 karakter uzunluğundadır.
+- Production seed işlemi demo kullanıcılarını otomatik oluşturmaz.
+- Migration işlemleri deployment öncesinde test edilmelidir.
+- Veritabanı yedekleri repository dışında saklanmalıdır.
 
 ## Demo Notu
 
-Bu deployment portföy gösterimi amacıyla Google Cloud deneme kaynakları üzerinde çalışır. VM'ler durdurulduğunda veya deneme süresi sona erdiğinde canlı bağlantılar geçici olarak erişilemez olabilir.
+Bu deployment portföy ve demo amaçlıdır. Render Free servisi kullanılmadığında uykuya geçebilir; bu nedenle uzun süre kullanılmayan uygulamada ilk API isteğinin yanıtlanması yaklaşık 30-60 saniye sürebilir.
+
+Render servisi uyurken BullMQ worker da durur. Servis tekrar başladığında recovery servisleri yarım kalan zamanlanmış işlemleri kontrol eder.
 
 ## Lisans
 
